@@ -63,7 +63,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			switch text.Text {
 			case "加我":
 				if user.Count == 1 {
-					_, err = bot.SendText([]string{content.From}, user.Contacts[0].DisplayName+" 您好，已將您加入 ^_^")
+					_, err = bot.SendText([]string{content.From}, user.Contacts[0].DisplayName+" 您好，已將您加入 ^_^ "+content.From)
 					if err != nil {
 						log.Println(err)
 					}
