@@ -21,6 +21,7 @@ import (
 
 	"github.com/garyburd/redigo/redis"
 	"github.com/line/line-bot-sdk-go/linebot"
+	"github.com/robfig/cron"
 )
 
 var bot *linebot.Client
@@ -48,6 +49,14 @@ func main() {
 	port := os.Getenv("PORT")
 	addr := fmt.Sprintf(":%s", port)
 	http.ListenAndServe(addr, nil)
+
+	c := cron.New()
+	spec := "@every 5s"
+	c.AddFunc(spec, func() {
+		log.Println("start")
+	})
+	c.Start()
+	select {}
 }
 
 func callbackHandler(w http.ResponseWriter, r *http.Request) {
@@ -72,14 +81,14 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 				log.Println(err)
 			}
 			switch text.Text {
-			case "加我":
+			case "加入":
 				if user.Count == 1 {
 					c := connectDB(os.Getenv("REDISTOGO_URL"))
 					n, appendErr := c.Do("SET", user.Contacts[0].MID, content.From)
 					if appendErr != nil {
 						log.Println("SET to redis error", appendErr, n)
 					} else {
-						_, err = bot.SendText([]string{content.From}, user.Contacts[0].DisplayName+" 您好，已將您加入 ^_^ "+content.From)
+						_, err = bot.SendText([]string{content.From}, user.Contacts[0].DisplayName+" 您好，已將您加入傳送對象 ^＿^ "+content.From)
 						if err != nil {
 							log.Println(err)
 						}
@@ -93,19 +102,22 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					if setErr != nil {
 						log.Println("DEL to redis error", setErr, n)
 					} else {
-						_, err = bot.SendText([]string{content.From}, user.Contacts[0].DisplayName+" 掰掰 QQ")
+						_, err = bot.SendText([]string{content.From}, user.Contacts[0].DisplayName+" 掰掰 Q＿Q")
 						if err != nil {
 							log.Println(err)
 						}
 					}
 					defer c.Close()
 				}
-			case "關於我":
+			case "編號":
 				if user.Count == 1 {
 					c := connectDB(os.Getenv("REDISTOGO_URL"))
 					id, getErr := redis.String(c.Do("GET", user.Contacts[0].MID))
 					if getErr != nil {
-						fmt.Println("redis get failed:", getErr)
+						_, err = bot.SendText([]string{content.From}, "目前沒有登記您的編號喔！")
+						if err != nil {
+							log.Println(err)
+						}
 					} else {
 						_, err = bot.SendText([]string{content.From}, id)
 						if err != nil {
