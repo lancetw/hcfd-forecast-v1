@@ -21,7 +21,6 @@ import (
 
 	"github.com/garyburd/redigo/redis"
 	"github.com/line/line-bot-sdk-go/linebot"
-	"github.com/robfig/cron"
 )
 
 var bot *linebot.Client
@@ -49,14 +48,6 @@ func main() {
 	port := os.Getenv("PORT")
 	addr := fmt.Sprintf(":%s", port)
 	http.ListenAndServe(addr, nil)
-
-	c := cron.New()
-	spec := "@every 5s"
-	c.AddFunc(spec, func() {
-		log.Println("start")
-	})
-	c.Start()
-	select {}
 }
 
 func callbackHandler(w http.ResponseWriter, r *http.Request) {
