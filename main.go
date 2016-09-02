@@ -60,9 +60,17 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				log.Println(err)
 			}
-			if text.Text == "whoami" {
+			switch text.Text {
+			case "加我":
 				if user.Count == 1 {
-					_, err = bot.SendText([]string{content.From}, "OK!!!"+user.Contacts[0].DisplayName)
+					_, err = bot.SendText([]string{content.From}, user.Contacts[0].DisplayName+" 您好，已將您加入 ^_^")
+					if err != nil {
+						log.Println(err)
+					}
+				}
+			case "退出":
+				if user.Count == 1 {
+					_, err = bot.SendText([]string{content.From}, user.Contacts[0].DisplayName+" 掰掰 QQ")
 					if err != nil {
 						log.Println(err)
 					}
