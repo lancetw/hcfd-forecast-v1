@@ -16,11 +16,6 @@
 		{
 			"ImportPath": "github.com/line/line-bot-sdk-go/linebot",
 			"Rev": "f3e3a38aee47ca24ded221ce4be6d9363e3d32e1"
-		},
-		{
-			"ImportPath": "github.com/robfig/cron",
-			"Comment": "v1-36-gab4c16f",
-			"Rev": "ab4c16f3a09641bd19d65f55b3d8d6edda7a8e05"
 		}
 	]
 }
