@@ -52,10 +52,21 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 	for _, result := range received.Results {
 		content := result.Content()
 		if content != nil && content.IsMessage && content.ContentType == linebot.ContentTypeText {
+			user, err := bot.GetUserProfile([]string{content.From})
+			if err != nil {
+				return
+			}
 			text, err := content.TextContent()
-			_, err = bot.SendText([]string{content.From}, "OK!!! "+text.Text)
 			if err != nil {
 				log.Println(err)
+			}
+			if text.Text == "whoami" {
+				if user.Count == 1 {
+					_, err = bot.SendText([]string{content.From}, "OK!!!"+user.Contacts[0].DisplayName)
+					if err != nil {
+						log.Println(err)
+					}
+				}
 			}
 		}
 	}
