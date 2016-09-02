@@ -1,11 +1,18 @@
 {
-	"ImportPath": "github.com/kkdai/LineBot",
+	"ImportPath": "github.com/lancetw/hcfd-forecast",
 	"GoVersion": "go1.6",
 	"GodepVersion": "v74",
-	"Packages": [
-		"./..."
-	],
 	"Deps": [
+		{
+			"ImportPath": "github.com/garyburd/redigo/internal",
+			"Comment": "v1.0.0-5-gffa8d46",
+			"Rev": "ffa8d46ada782d81cfda81a0fbd9f45ceae448e8"
+		},
+		{
+			"ImportPath": "github.com/garyburd/redigo/redis",
+			"Comment": "v1.0.0-5-gffa8d46",
+			"Rev": "ffa8d46ada782d81cfda81a0fbd9f45ceae448e8"
+		},
 		{
 			"ImportPath": "github.com/line/line-bot-sdk-go/linebot",
 			"Rev": "f3e3a38aee47ca24ded221ce4be6d9363e3d32e1"
