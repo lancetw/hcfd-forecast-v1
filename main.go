@@ -20,7 +20,7 @@ import (
 	"strconv"
 
 	"github.com/garyburd/redigo/redis"
-	db "github.com/lancetw/hcfd-forecast/helper"
+	"github.com/lancetw/hcfd-forecast/db"
 	"github.com/line/line-bot-sdk-go/linebot"
 )
 
