@@ -30,7 +30,7 @@ func main() {
 
 	for {
 		var msgs = rain.GetInfo()
-		log.Println("[Working]")
+		log.Println("\n***************************************")
 
 		c := db.Connect(os.Getenv("REDISTOGO_URL"))
 		users, smembersErr := redis.Strings(c.Do("SMEMBERS", "user"))
