@@ -27,7 +27,7 @@ func main() {
 	for {
 		var msg = "測試自動發訊息～～ :D"
 
-		log.Println("Working...")
+		log.Println("[Working] ", time.Now().Format("Mon Jan _2 15:04:05 2006"))
 
 		c := db.Connect(os.Getenv("REDISTOGO_URL"))
 		users, smembersErr := redis.Strings(c.Do("SMEMBERS", "user"))
