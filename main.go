@@ -96,7 +96,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					c := db.Connect(os.Getenv("REDISTOGO_URL"))
 					status, getErr := redis.Int(c.Do("SISMEMBER", user.Contacts[0].MID))
 					if getErr != nil {
-						_, err = bot.SendText([]string{content.From}, "目前沒有登記您的編號喔！", status, getErr.Error())
+						_, err = bot.SendText([]string{content.From}, "目前沒有登記您的編號喔！"+strconv.Itoa(status)+" | "+getErr.Error())
 						if err != nil {
 							log.Println(err)
 						}
