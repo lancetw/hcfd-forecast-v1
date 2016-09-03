@@ -120,7 +120,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					if err == nil {
 						local = local.In(location)
 					}
-					_, err = bot.SendText([]string{content.From}, local.Format("2006-01-02 15:04:05"))
+					_, err = bot.SendText([]string{content.From}, local.Format("2006/01/02 15:04:05"))
 					if err != nil {
 						log.Println(err)
 					}
