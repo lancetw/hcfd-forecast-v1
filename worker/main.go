@@ -45,7 +45,7 @@ func main() {
 			}
 
 			for _, contentTo := range users {
-				_, err = bot.SendText([]string{contentTo}, fmt.Sprintf("現在時間：%v", local))
+				_, err = bot.SendText([]string{contentTo}, fmt.Sprintf("現在時間：%v", local.Format("15:04")))
 				if err != nil {
 					log.Println(err)
 				}
