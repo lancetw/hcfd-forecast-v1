@@ -20,7 +20,7 @@ import (
 	"strconv"
 
 	"github.com/garyburd/redigo/redis"
-	"github.com/lancetw/hcfd-forecast/worker"
+	db "github.com/lancetw/hcfd-forecast/helper"
 	"github.com/line/line-bot-sdk-go/linebot"
 )
 
@@ -65,7 +65,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			switch text.Text {
 			case "加入":
 				if user.Count == 1 {
-					c := worker.ConnectDB(os.Getenv("REDISTOGO_URL"))
+					c := db.Connect(os.Getenv("REDISTOGO_URL"))
 					n, appendErr := c.Do("SADD", "user", content.From)
 					if appendErr != nil {
 						log.Println("SET to redis error", appendErr, n)
@@ -79,7 +79,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 				}
 			case "退出":
 				if user.Count == 1 {
-					c := worker.ConnectDB(os.Getenv("REDISTOGO_URL"))
+					c := db.Connect(os.Getenv("REDISTOGO_URL"))
 					n, setErr := c.Do("SREM", "user", user.Contacts[0].MID)
 					if setErr != nil {
 						log.Println("DEL to redis error", setErr, n)
@@ -93,7 +93,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 				}
 			case "狀態":
 				if user.Count == 1 {
-					c := worker.ConnectDB(os.Getenv("REDISTOGO_URL"))
+					c := db.Connect(os.Getenv("REDISTOGO_URL"))
 					status, getErr := redis.Int(c.Do("SISMEMBER", user.Contacts[0].MID))
 					if getErr != nil || status == 0 {
 						_, err = bot.SendText([]string{content.From}, "目前沒有登記您的編號喔！")

@@ -6,24 +6,14 @@ import (
 	"time"
 
 	"github.com/garyburd/redigo/redis"
+	db "github.com/lancetw/helper/dbHelper"
 )
-
-// ConnectDB database connection helper
-func ConnectDB(url string) redis.Conn {
-	c, redisErr := redis.DialURL(url)
-	if redisErr != nil {
-		log.Println("Connect to redis error", redisErr)
-		return nil
-	}
-
-	return c
-}
 
 func main() {
 
 	for {
 		log.Println("Working...")
-		c := ConnectDB(os.Getenv("REDISTOGO_URL"))
+		c := db.Connect(os.Getenv("REDISTOGO_URL"))
 		users, smembersErr := redis.Strings(c.Do("SMEMBERS", "user"))
 
 		if smembersErr != nil {
