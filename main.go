@@ -66,11 +66,11 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			case "加入":
 				if user.Count == 1 {
 					c := db.Connect(os.Getenv("REDISTOGO_URL"))
-					n, appendErr := c.Do("SADD", "user", content.From)
+					n, appendErr := c.Do("SADD", "user", user.Contacts[0].MID)
 					if appendErr != nil {
 						log.Println("SET to redis error", appendErr, n)
 					} else {
-						_, err = bot.SendText([]string{content.From}, user.Contacts[0].DisplayName+" 您好，已將您加入傳送對象 ^＿^ "+content.From)
+						_, err = bot.SendText([]string{content.From}, user.Contacts[0].DisplayName+" 您好，已將您加入傳送對象 ^＿^ ")
 						if err != nil {
 							log.Println(err)
 						}

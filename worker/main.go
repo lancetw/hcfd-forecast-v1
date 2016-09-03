@@ -10,7 +10,6 @@ import (
 )
 
 func main() {
-
 	for {
 		log.Println("Working...")
 		c := db.Connect(os.Getenv("REDISTOGO_URL"))
