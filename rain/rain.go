@@ -28,9 +28,11 @@ func fetchXML(url string) []byte {
 }
 
 // GetInfo from "中央氣象局"
-func GetInfo() {
+func GetInfo() []string {
+	var msgs = []string{}
+
 	target := "新竹市"
-	warning := false
+
 	rainLevel := map[string]float32{
 		"10minutes": 6.0,
 		"1hour":     30.0,
@@ -107,7 +109,7 @@ func GetInfo() {
 	err := xml.Unmarshal([]byte(xmldata0), &v0)
 	if err != nil {
 		log.Printf("error: %v", err)
-		return
+		return []string{}
 	}
 
 	for _, location := range v0.Location {
@@ -121,16 +123,16 @@ func GetInfo() {
 						} else {
 							log.Printf(" %s：%.2f \n", "十分鐘雨量", element.Value)
 							if element.Value > rainLevel["10minutes"] {
-								warning = true
+								msgs = append(msgs, fmt.Sprintf("[大雨通報] %s 地區 %s 為 %f", element.Name, "十分鐘雨量", element.Value))
 							}
 						}
 					case "RAIN":
 						if element.Value < 0 {
-							log.Printf("%-4s %s：%s", location.Name, "時雨量", "-")
+							log.Printf("%-4s %s：%s", location.Name, "一小時雨量", "-")
 						} else {
-							log.Printf("%-4s %s：%.2f", location.Name, "時雨量", element.Value)
+							log.Printf("%-4s %s：%.2f", location.Name, "一小時雨量", element.Value)
 							if element.Value > rainLevel["1hour"] {
-								warning = true
+								msgs = append(msgs, fmt.Sprintf("[大雨通報] %s 地區 %s 為 %f", element.Name, "一小時雨量", element.Value))
 							}
 						}
 					}
@@ -139,29 +141,28 @@ func GetInfo() {
 		}
 	}
 
-	if warning {
-		log.Println("***************************************")
-		log.Println("！！！豪大雨警告！！！")
-		log.Println("\n***************************************")
-	}
-
 	url1 := baseURL + "W-C0033-001" + "&authorizationkey=" + authKey
 	xmldata1 := fetchXML(url1)
 
 	v1 := Result1{}
 	if xml.Unmarshal([]byte(xmldata1), &v1) != nil {
 		log.Printf("error: %v", err)
-		return
+		return []string{}
 	}
 
 	for _, location := range v1.Location {
 		if location.Name == target && location.Hazards.Info.Phenomena != "" {
 			log.Println("***************************************")
 			log.Printf("%s%s 影響地區：", location.Hazards.Info.Phenomena, location.Hazards.Info.Significance)
+			m := fmt.Sprintf("%s%s 影響地區：", location.Hazards.Info.Phenomena, location.Hazards.Info.Significance)
 			for _, str := range location.Hazards.HazardInfo.AffectedAreas {
 				log.Printf("%s ", str.Name)
+				m = m + fmt.Sprintf("%s ", str.Name)
 			}
 			log.Println("\n***************************************")
+
 		}
 	}
+
+	return msgs
 }

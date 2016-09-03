@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -26,8 +27,7 @@ func main() {
 	}
 
 	for {
-		var msg = "測試自動發訊息～～ :D"
-
+		var msgs = rain.GetInfo()
 		log.Println("[Working]")
 
 		c := db.Connect(os.Getenv("REDISTOGO_URL"))
@@ -36,11 +36,20 @@ func main() {
 		if smembersErr != nil {
 			log.Println("SMEMBERS redis error", smembersErr)
 		} else {
+			if time.Now().Minute() == 0 {
+				for _, contentTo := range users {
+					_, err = bot.SendText([]string{contentTo}, fmt.Sprintf("現在時間：%v", time.Now().Format("15:04")))
+					if err != nil {
+						log.Println(err)
+					}
+				}
+			}
 			for _, contentTo := range users {
-				rain.GetInfo()
-				_, err = bot.SendText([]string{contentTo}, msg)
-				if err != nil {
-					log.Println(err)
+				for _, msg := range msgs {
+					_, err = bot.SendText([]string{contentTo}, msg)
+					if err != nil {
+						log.Println(err)
+					}
 				}
 			}
 		}
