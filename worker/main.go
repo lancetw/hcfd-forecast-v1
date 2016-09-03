@@ -43,14 +43,14 @@ func main() {
 			if err == nil {
 				local = local.In(location)
 			}
-			if time.Now().Minute() == 0 {
-				for _, contentTo := range users {
-					_, err = bot.SendText([]string{contentTo}, fmt.Sprintf("現在時間：%v", local))
-					if err != nil {
-						log.Println(err)
-					}
+
+			for _, contentTo := range users {
+				_, err = bot.SendText([]string{contentTo}, fmt.Sprintf("現在時間：%v", local))
+				if err != nil {
+					log.Println(err)
 				}
 			}
+
 			for _, contentTo := range users {
 				for _, msg := range msgs {
 					_, err = bot.SendText([]string{contentTo}, msg)
@@ -60,7 +60,9 @@ func main() {
 				}
 			}
 		}
+
 		defer c.Close()
+
 		time.Sleep(60 * 10 * time.Second)
 	}
 }
