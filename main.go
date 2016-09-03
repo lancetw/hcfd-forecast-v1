@@ -18,11 +18,14 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/garyburd/redigo/redis"
 	"github.com/lancetw/hcfd-forecast/db"
 	"github.com/line/line-bot-sdk-go/linebot"
 )
+
+const timeZone = "Asia/Taipei"
 
 var bot *linebot.Client
 
@@ -109,6 +112,18 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						}
 					}
 					defer c.Close()
+				}
+			case "時間":
+				if user.Count == 1 {
+					local := time.Now()
+					location, err := time.LoadLocation(timeZone)
+					if err == nil {
+						local = local.In(location)
+					}
+					_, err = bot.SendText([]string{content.From}, local.Format("2006-01-02 15:04:05"))
+					if err != nil {
+						log.Println(err)
+					}
 				}
 			}
 		}
