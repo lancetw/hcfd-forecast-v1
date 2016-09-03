@@ -13,6 +13,8 @@ import (
 	"github.com/line/line-bot-sdk-go/linebot"
 )
 
+const timeZone = "Asia/Taipei"
+
 var bot *linebot.Client
 
 func main() {
@@ -36,9 +38,14 @@ func main() {
 		if smembersErr != nil {
 			log.Println("SMEMBERS redis error", smembersErr)
 		} else {
+			local := time.Now()
+			location, err := time.LoadLocation(timeZone)
+			if err == nil {
+				local = local.In(location)
+			}
 			if time.Now().Minute() == 0 {
 				for _, contentTo := range users {
-					_, err = bot.SendText([]string{contentTo}, fmt.Sprintf("現在時間：%v", time.Now().Format("15:04")))
+					_, err = bot.SendText([]string{contentTo}, fmt.Sprintf("現在時間：%v", local))
 					if err != nil {
 						log.Println(err)
 					}

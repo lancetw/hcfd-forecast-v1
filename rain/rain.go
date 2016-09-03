@@ -119,18 +119,20 @@ func GetInfo() []string {
 					switch element.Name {
 					case "MIN_10":
 						if element.Value < 0 {
-							log.Printf(" %s：%s \n", "十分鐘雨量", "-")
+							log.Printf("%s：%s", "十分鐘雨量", "-")
 						} else {
-							log.Printf(" %s：%.2f \n", "十分鐘雨量", element.Value)
+							log.Printf("%s：%.2f", "十分鐘雨量", element.Value)
 							if element.Value > rainLevel["10minutes"] {
 								msgs = append(msgs, fmt.Sprintf("[大雨通報] %s 地區 %s 為 %f", element.Name, "十分鐘雨量", element.Value))
 							}
 						}
 					case "RAIN":
 						if element.Value < 0 {
-							log.Printf("%-4s %s：%s", location.Name, "一小時雨量", "-")
+							log.Printf("[%s]", element.Name)
+							log.Printf("%s：%s", "一小時雨量", "-")
 						} else {
-							log.Printf("%-4s %s：%.2f", location.Name, "一小時雨量", element.Value)
+							log.Printf("[%s]", element.Name)
+							log.Printf("%s：%.2f", "一小時雨量", element.Value)
 							if element.Value > rainLevel["1hour"] {
 								msgs = append(msgs, fmt.Sprintf("[大雨通報] %s 地區 %s 為 %f", element.Name, "一小時雨量", element.Value))
 							}
