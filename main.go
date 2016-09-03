@@ -66,7 +66,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			case "加入":
 				if user.Count == 1 {
 					c := db.Connect(os.Getenv("REDISTOGO_URL"))
-					n, appendErr := c.Do("SADD", "user", user.Contacts[0].MID)
+					n, appendErr := c.Do("SADD", "user", content.From)
 					if appendErr != nil {
 						log.Println("SET to redis error", appendErr, n)
 					} else {
@@ -80,7 +80,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			case "退出":
 				if user.Count == 1 {
 					c := db.Connect(os.Getenv("REDISTOGO_URL"))
-					n, setErr := c.Do("SREM", "user", user.Contacts[0].MID)
+					n, setErr := c.Do("SREM", "user", content.From)
 					if setErr != nil {
 						log.Println("DEL to redis error", setErr, n)
 					} else {
@@ -94,14 +94,14 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			case "狀態":
 				if user.Count == 1 {
 					c := db.Connect(os.Getenv("REDISTOGO_URL"))
-					status, getErr := redis.Int(c.Do("SISMEMBER", "user", user.Contacts[0].MID))
+					status, getErr := redis.Int(c.Do("SISMEMBER", "user", content.From))
 					if getErr != nil || status == 0 {
 						_, err = bot.SendText([]string{content.From}, "目前沒有登記您的編號喔！")
 						if err != nil {
 							log.Println(err)
 						}
 					} else {
-						_, err = bot.SendText([]string{content.From}, user.Contacts[0].MID)
+						_, err = bot.SendText([]string{content.From}, "OK")
 						if err != nil {
 							log.Println(err)
 						}
