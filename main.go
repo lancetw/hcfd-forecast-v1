@@ -20,20 +20,11 @@ import (
 	"strconv"
 
 	"github.com/garyburd/redigo/redis"
+	"github.com/lancetw/hcfd-forecast/worker"
 	"github.com/line/line-bot-sdk-go/linebot"
 )
 
 var bot *linebot.Client
-
-func connectDB(url string) redis.Conn {
-	c, redisErr := redis.DialURL(url)
-	if redisErr != nil {
-		log.Println("Connect to redis error", redisErr)
-		return nil
-	}
-
-	return c
-}
 
 func main() {
 	strID := os.Getenv("ChannelID")
@@ -74,8 +65,8 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			switch text.Text {
 			case "加入":
 				if user.Count == 1 {
-					c := connectDB(os.Getenv("REDISTOGO_URL"))
-					n, appendErr := c.Do("SET", user.Contacts[0].MID, content.From)
+					c := worker.ConnectDB(os.Getenv("REDISTOGO_URL"))
+					n, appendErr := c.Do("SADD", "user", content.From)
 					if appendErr != nil {
 						log.Println("SET to redis error", appendErr, n)
 					} else {
@@ -88,8 +79,8 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 				}
 			case "退出":
 				if user.Count == 1 {
-					c := connectDB(os.Getenv("REDISTOGO_URL"))
-					n, setErr := c.Do("DEL", user.Contacts[0].MID)
+					c := worker.ConnectDB(os.Getenv("REDISTOGO_URL"))
+					n, setErr := c.Do("SREM", "user", user.Contacts[0].MID)
 					if setErr != nil {
 						log.Println("DEL to redis error", setErr, n)
 					} else {
@@ -100,17 +91,17 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					}
 					defer c.Close()
 				}
-			case "編號":
+			case "狀態":
 				if user.Count == 1 {
-					c := connectDB(os.Getenv("REDISTOGO_URL"))
-					id, getErr := redis.String(c.Do("GET", user.Contacts[0].MID))
-					if getErr != nil {
+					c := worker.ConnectDB(os.Getenv("REDISTOGO_URL"))
+					status, getErr := redis.Int(c.Do("SISMEMBER", user.Contacts[0].MID))
+					if getErr != nil || status == 0 {
 						_, err = bot.SendText([]string{content.From}, "目前沒有登記您的編號喔！")
 						if err != nil {
 							log.Println(err)
 						}
 					} else {
-						_, err = bot.SendText([]string{content.From}, id)
+						_, err = bot.SendText([]string{content.From}, user.Contacts[0].MID)
 						if err != nil {
 							log.Println(err)
 						}
