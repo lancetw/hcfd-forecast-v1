@@ -8,6 +8,7 @@ import (
 
 	"github.com/garyburd/redigo/redis"
 	"github.com/lancetw/hcfd-forecast/db"
+	"github.com/lancetw/hcfd-forecast/rain"
 	"github.com/line/line-bot-sdk-go/linebot"
 )
 
@@ -27,7 +28,7 @@ func main() {
 	for {
 		var msg = "測試自動發訊息～～ :D"
 
-		log.Println("[Working] ", time.Now().Format("Mon Jan _2 15:04:05 2006"))
+		log.Println("[Working]")
 
 		c := db.Connect(os.Getenv("REDISTOGO_URL"))
 		users, smembersErr := redis.Strings(c.Do("SMEMBERS", "user"))
@@ -36,6 +37,7 @@ func main() {
 			log.Println("SMEMBERS redis error", smembersErr)
 		} else {
 			for _, contentTo := range users {
+				rain.GetInfo()
 				_, err = bot.SendText([]string{contentTo}, msg)
 				if err != nil {
 					log.Println(err)
