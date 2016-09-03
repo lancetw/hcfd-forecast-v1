@@ -1,2 +1,2 @@
 web: hcfd-forecast
-worker: worker
+worker: hcfd-forecast/worker
