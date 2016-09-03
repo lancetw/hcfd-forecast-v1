@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/garyburd/redigo/redis"
-	db "github.com/lancetw/helper/dbHelper"
+	"github.com/lancetw/hcfd-forecast/db"
 )
 
 func main() {
