@@ -32,9 +32,11 @@ func main() {
 	if err != nil {
 		log.Fatal("Wrong environment setting about ChannelID")
 	}
-
 	bot, err = linebot.NewClient(numID, os.Getenv("ChannelSecret"), os.Getenv("MID"))
-	log.Println("Bot:", bot, " err:", err)
+	if err != nil {
+		log.Println("Bot:", bot, " err:", err)
+	}
+
 	http.HandleFunc("/callback", callbackHandler)
 	port := os.Getenv("PORT")
 	addr := fmt.Sprintf(":%s", port)
