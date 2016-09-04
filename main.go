@@ -73,7 +73,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 				log.Println(err)
 				return
 			}
-			_, err = bot.SendText([]string{from}, user.Contacts[0].DisplayName+" 您好，目前可用指令為：「加入」「退出」「警報」「狀態」「時間」")
+			_, err = bot.SendText([]string{from}, user.Contacts[0].DisplayName+" 您好，目前可用指令為：「加入」「退出」「警報」「貓圖」「狀態」「時間」")
 			if err != nil {
 				log.Println(err)
 			}
