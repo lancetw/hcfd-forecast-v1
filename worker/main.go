@@ -33,12 +33,7 @@ func main() {
 		targets0 := []string{"新竹市", "新竹縣"}
 		msgs0, token0 := rain.GetRainingInfo(targets0)
 
-		n0, addErr := c.Do("SADD", "token", token0)
-		if addErr != nil {
-			log.Println("SADD to redis error", addErr, n0)
-		}
-
-		status0, getErr := redis.Int(c.Do("SISMEMBER", "token", token0))
+		status0, getErr := redis.Int(c.Do("SISMEMBER", "token0", token0))
 		if getErr != nil {
 			if err != nil {
 				log.Println(err)
@@ -48,12 +43,7 @@ func main() {
 		targets1 := []string{"新竹市", "新竹縣", "台中市", "高雄市", "台北市"}
 		msgs1, token1 := rain.GetWarningInfo(targets1)
 
-		n, addErr := c.Do("SADD", "token", token1)
-		if addErr != nil {
-			log.Println("SADD to redis error", addErr, n)
-		}
-
-		status1, getErr := redis.Int(c.Do("SISMEMBER", "token", token1))
+		status1, getErr := redis.Int(c.Do("SISMEMBER", "token1", token1))
 		if getErr != nil {
 			if err != nil {
 				log.Println(err)
@@ -89,6 +79,16 @@ func main() {
 					}
 				}
 			}
+		}
+
+		n0, addErr := c.Do("SADD", "token0", token0)
+		if addErr != nil {
+			log.Println("SADD to redis error", addErr, n0)
+		}
+
+		n, addErr := c.Do("SADD", "token1", token1)
+		if addErr != nil {
+			log.Println("SADD to redis error", addErr, n)
 		}
 
 		defer c.Close()

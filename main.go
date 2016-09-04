@@ -142,6 +142,15 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					log.Println(err)
 				}
 
+			case "雨量":
+				msgs, _ := rain.GetRainingInfo(nil)
+				for _, msg := range msgs {
+					_, err = bot.SendText([]string{content.From}, msg)
+					if err != nil {
+						log.Println(err)
+					}
+				}
+
 			case "警報":
 				msgs, _ := rain.GetWarningInfo(nil)
 				for _, msg := range msgs {
@@ -150,13 +159,18 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						log.Println(err)
 					}
 				}
+
 			case "清除":
 				c := db.Connect(os.Getenv("REDISTOGO_URL"))
-				status, clearErr := c.Do("DEL", "token")
-				if clearErr != nil {
-					log.Println("DEL to redis error", clearErr, status)
+				status0, clearErr0 := c.Do("DEL", "token0")
+				if clearErr0 != nil {
+					log.Println("DEL to redis error", clearErr0, status0)
 				}
-				if status == 0 {
+				status1, clearErr1 := c.Do("DEL", "token1")
+				if clearErr1 != nil {
+					log.Println("DEL to redis error", clearErr1, status1)
+				}
+				if status0 == 0 && status1 == 0 {
 					_, err = bot.SendText([]string{content.From}, "清除完成 :D")
 					if err != nil {
 						log.Println(err)
