@@ -179,12 +179,12 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			case "正妹":
 				type Beauty struct {
 					Count   int      `json:"count"`
-					PhotoId []string `json:"photoId"`
+					PhotoID []string `json:"photoId"`
 				}
 				beauty := new(Beauty)
-				getJSON("http://photo.xuite.net/_hgwall/list/getbeauty", &beauty)
-				if beauty.PhotoId[0] != "" {
-					_, err = bot.SendImage([]string{content.From}, beauty.File, beauty.PhotoId[0])
+				getJSON("", &beauty)
+				if beauty.PhotoID[0] != "" {
+					_, err = bot.SendImage([]string{content.From}, beauty.PhotoID[0], beauty.PhotoID[0])
 					if err != nil {
 						log.Println(err)
 					}
