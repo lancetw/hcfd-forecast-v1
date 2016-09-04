@@ -13,6 +13,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -90,9 +91,9 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			switch text.Text {
 			case "加入":
 				c := db.Connect(os.Getenv("REDISTOGO_URL"))
-				n, addErr := c.Do("SADD", "user", content.From)
+				status, addErr := c.Do("SADD", "user", content.From)
 				if addErr != nil {
-					log.Println("SADD to redis error", addErr, n)
+					log.Println("SADD to redis error", addErr, status)
 				} else {
 					_, err = bot.SendText([]string{content.From}, user.Contacts[0].DisplayName+" 您好，已將您加入傳送對象 ^＿^ ")
 					if err != nil {
@@ -103,9 +104,9 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 
 			case "退出":
 				c := db.Connect(os.Getenv("REDISTOGO_URL"))
-				n, setErr := c.Do("SREM", "user", content.From)
+				status, setErr := c.Do("SREM", "user", content.From)
 				if setErr != nil {
-					log.Println("DEL to redis error", setErr, n)
+					log.Println("DEL to redis error", setErr, status)
 				} else {
 					_, err = bot.SendText([]string{content.From}, user.Contacts[0].DisplayName+" 掰掰 Q＿Q")
 					if err != nil {
@@ -149,6 +150,31 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						log.Println(err)
 					}
 				}
+			case "清除":
+				c := db.Connect(os.Getenv("REDISTOGO_URL"))
+				status, clearErr := c.Do("SREM", "token")
+				if clearErr != nil {
+					log.Println("DEL to redis error", clearErr, status)
+				}
+				if status == 0 {
+					_, err = bot.SendText([]string{content.From}, "清除完成 :D")
+					if err != nil {
+						log.Println(err)
+					}
+				}
+
+			case "貓圖":
+				type Cat struct {
+					File string `json:"file"`
+				}
+				cat := new(Cat)
+				getJSON("http://random.cat/meow", &cat)
+				if cat.File != "" {
+					_, err = bot.SendImage([]string{content.From}, cat.File, cat.File)
+					if err != nil {
+						log.Println(err)
+					}
+				}
 
 			default:
 				_, err = bot.SendText([]string{content.From}, "指令錯誤，請重試")
@@ -159,4 +185,15 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
+}
+
+// getJSON func
+func getJSON(url string, target interface{}) error {
+	r, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer r.Body.Close()
+
+	return json.NewDecoder(r.Body).Decode(target)
 }
