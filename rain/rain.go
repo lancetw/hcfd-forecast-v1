@@ -152,6 +152,7 @@ func GetInfo() []string {
 		return []string{}
 	}
 
+	var hazardmsgs = ""
 	for _, location := range v1.Location {
 		if location.Hazards.Info.Phenomena != "" {
 			log.Println("***************************************")
@@ -161,10 +162,13 @@ func GetInfo() []string {
 				log.Printf("%s ", str.Name)
 				m = m + fmt.Sprintf("%s ", str.Name)
 			}
+			m = m + "\n"
 			log.Println("\n***************************************")
-			msgs = append(msgs, m)
+			hazardmsgs = hazardmsgs + m
 		}
 	}
+
+	msgs = append(msgs, hazardmsgs)
 
 	return msgs
 }
