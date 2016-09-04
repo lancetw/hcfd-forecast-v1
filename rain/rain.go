@@ -166,12 +166,11 @@ func GetInfo() []string {
 			log.Println("***************************************")
 			log.Printf("【%s%s%s】影響地區：", location.Name, location.Hazards.Info.Phenomena, location.Hazards.Info.Significance)
 			m := fmt.Sprintf("【%s%s%s】影響地區：", location.Name, location.Hazards.Info.Phenomena, location.Hazards.Info.Significance)
-			m = m + fmt.Sprintf("，影響時間為 %s 到 %s", location.Hazards.ValidTime.StartTime.Format("01/02 15:04"), location.Hazards.ValidTime.EndTime.Format("01/02 15:04"))
 			for _, str := range location.Hazards.HazardInfo.AffectedAreas {
 				log.Printf("%s ", str.Name)
 				m = m + fmt.Sprintf("%s ", str.Name)
 			}
-			m = m + "\n"
+			m = m + fmt.Sprintf("\n影響時間為 %s 到 %s\n", location.Hazards.ValidTime.StartTime.Format("01/02 15:04"), location.Hazards.ValidTime.EndTime.Format("01/02 15:04"))
 			log.Println("\n***************************************")
 			hazardmsgs = hazardmsgs + m
 		}
