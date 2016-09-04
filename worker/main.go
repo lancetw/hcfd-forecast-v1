@@ -53,8 +53,6 @@ func main() {
 				if timeZoneErr == nil {
 					local = local.In(location)
 				}
-				log.Println(users0)
-				log.Println(msgs0)
 				for _, contentTo := range users0 {
 					for _, msg := range msgs0 {
 						_, err = bot.SendText([]string{contentTo}, msg)
@@ -94,8 +92,6 @@ func main() {
 				if err == nil {
 					local = local.In(location)
 				}
-				log.Println(users1)
-				log.Println(msgs1)
 				for _, contentTo := range users1 {
 					for _, msg := range msgs1 {
 						_, err = bot.SendText([]string{contentTo}, msg)

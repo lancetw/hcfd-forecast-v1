@@ -109,8 +109,8 @@ func GetRainingInfo(targets []string) ([]string, string) {
 	var msgs = []string{}
 
 	rainLevel := map[string]float32{
-		"10minutes": -1, // 6
-		"1hour":     -1, // 30
+		"10minutes": 6,  // 6
+		"1hour":     30, // 30
 	}
 
 	url := baseURL + "O-A0002-001" + "&authorizationkey=" + authKey
