@@ -22,6 +22,7 @@ import (
 
 	"github.com/garyburd/redigo/redis"
 	"github.com/lancetw/hcfd-forecast/db"
+	"github.com/lancetw/hcfd-forecast/rain"
 	"github.com/line/line-bot-sdk-go/linebot"
 )
 
@@ -135,13 +136,23 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			case "時間":
 				if user.Count == 1 {
 					local := time.Now()
-					location, err := time.LoadLocation(timeZone)
-					if err == nil {
+					location, timezoneErr := time.LoadLocation(timeZone)
+					if timezoneErr == nil {
 						local = local.In(location)
 					}
 					_, err = bot.SendText([]string{content.From}, local.Format("2006/01/02 15:04:05"))
 					if err != nil {
 						log.Println(err)
+					}
+				}
+			case "警報":
+				if user.Count == 1 {
+					msgs, _ := rain.GetInfo("新竹市", nil)
+					for _, msg := range msgs {
+						_, err = bot.SendText([]string{content.From}, msg)
+						if err != nil {
+							log.Println(err)
+						}
 					}
 				}
 			}

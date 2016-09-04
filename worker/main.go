@@ -29,7 +29,7 @@ func main() {
 
 	for {
 		targets := []string{"新竹市", "新竹縣", "屏東縣", "高雄市", "台中市"}
-		msgs, _ := rain.GetInfo(targets)
+		msgs, _ := rain.GetInfo(targets[0], targets)
 		log.Println("\n***************************************")
 
 		c := db.Connect(os.Getenv("REDISTOGO_URL"))

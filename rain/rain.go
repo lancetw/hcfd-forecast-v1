@@ -103,7 +103,7 @@ func fetchXML(url string) []byte {
 }
 
 // GetInfo from "中央氣象局"
-func GetInfo(targets []string) ([]string, string) {
+func GetInfo(place string, targets []string) ([]string, string) {
 	var msgs = []string{}
 
 	rainLevel := map[string]float32{
@@ -126,7 +126,7 @@ func GetInfo(targets []string) ([]string, string) {
 
 	for _, location := range v0.Location {
 		for _, parameter := range location.Parameter {
-			if parameter.Name == "CITY" && parameter.Value == targets[0] {
+			if parameter.Name == "CITY" && parameter.Value == place {
 				for _, element := range location.WeatherElement {
 					switch element.Name {
 					case "MIN_10":
