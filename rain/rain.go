@@ -189,7 +189,9 @@ func GetInfo(place string, targets []string) ([]string, string) {
 		}
 	}
 
-	msgs = append(msgs, hazardmsgs)
+	if hazardmsgs != "" {
+		msgs = append(msgs, hazardmsgs)
+	}
 
 	return msgs, token
 }
