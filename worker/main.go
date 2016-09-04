@@ -30,7 +30,7 @@ func main() {
 	for {
 		c := db.Connect(os.Getenv("REDISTOGO_URL"))
 
-		targets0 := []string{"基隆市"}
+		targets0 := []string{"新竹市"}
 		msgs0, token0 := rain.GetRainingInfo(targets0)
 
 		status0, getErr := redis.Int(c.Do("SISMEMBER", "token0", token0))
@@ -71,7 +71,7 @@ func main() {
 			log.Println("SADD to redis error", addErr, n0)
 		}
 
-		targets1 := []string{"基隆市", "台北市"}
+		targets1 := []string{"新竹市", "新竹縣"}
 		msgs1, token1 := rain.GetWarningInfo(targets1)
 
 		status1, getErr := redis.Int(c.Do("SISMEMBER", "token1", token1))
