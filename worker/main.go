@@ -41,8 +41,6 @@ func main() {
 		}
 
 		if status0 == 0 {
-			log.Println("\n***************** 0 **********************")
-
 			users0, smembersErr := redis.Strings(c.Do("SMEMBERS", "user"))
 
 			if smembersErr != nil {
@@ -80,8 +78,6 @@ func main() {
 		}
 
 		if status1 == 0 {
-			log.Println("\n**************** 1 ***********************")
-
 			users1, smembersErr := redis.Strings(c.Do("SMEMBERS", "user"))
 
 			if smembersErr != nil {
