@@ -45,7 +45,7 @@ func main() {
 			}
 		}
 
-		if status == 1 {
+		if status == 0 {
 			log.Println("\n***************************************")
 
 			users, smembersErr := redis.Strings(c.Do("SMEMBERS", "user"))
