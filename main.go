@@ -176,6 +176,20 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					}
 				}
 
+			case "正妹":
+				type Beauty struct {
+					Count   int      `json:"count"`
+					PhotoId []string `json:"photoId"`
+				}
+				beauty := new(Beauty)
+				getJSON("http://photo.xuite.net/_hgwall/list/getbeauty", &beauty)
+				if beauty.PhotoId[0] != "" {
+					_, err = bot.SendImage([]string{content.From}, beauty.File, beauty.PhotoId[0])
+					if err != nil {
+						log.Println(err)
+					}
+				}
+
 			default:
 				_, err = bot.SendText([]string{content.From}, "指令錯誤，請重試")
 				if err != nil {
