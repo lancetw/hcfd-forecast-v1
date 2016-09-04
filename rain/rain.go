@@ -7,8 +7,81 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 )
+
+// Location0 struct
+type Location0 struct {
+	Lat            float32          `xml:"lat"`
+	Lng            float32          `xml:"lng"`
+	Name           string           `xml:"locationName"`
+	StationID      string           `xml:"stationId"`
+	Time           time.Time        `xml:"time>obsTime"`
+	WeatherElement []WeatherElement `xml:"weatherElement"`
+	Parameter      []Parameter      `xml:"parameter"`
+}
+
+// Location1 struct
+type Location1 struct {
+	Geocode int     `xml:"geocode"`
+	Name    string  `xml:"locationName"`
+	Hazards Hazards `xml:"hazardConditions>hazards"`
+}
+
+// WeatherElement struct
+type WeatherElement struct {
+	Name  string  `xml:"elementName"`
+	Value float32 `xml:"elementValue>value"`
+}
+
+// Parameter struct
+type Parameter struct {
+	Name  string `xml:"parameterName"`
+	Value string `xml:"parameterValue"`
+}
+
+// ValidTime struct
+type ValidTime struct {
+	StartTime time.Time `xml:"startTime"`
+	EndTime   time.Time `xml:"endTime"`
+}
+
+// AffectedAreas struct
+type AffectedAreas struct {
+	Name string `xml:"locationName"`
+}
+
+// HazardInfo0 struct
+type HazardInfo0 struct {
+	Language     string `xml:"language"`
+	Phenomena    string `xml:"phenomena"`
+	Significance string `xml:"significance"`
+}
+
+// HazardInfo1 struct
+type HazardInfo1 struct {
+	Language      string          `xml:"language"`
+	Phenomena     string          `xml:"phenomena"`
+	AffectedAreas []AffectedAreas `xml:"affectedAreas>location"`
+}
+
+// Hazards struct
+type Hazards struct {
+	Info       HazardInfo0 `xml:"info"`
+	ValidTime  ValidTime   `xml:"validTime"`
+	HazardInfo HazardInfo1 `xml:"hazard>info"`
+}
+
+// Result0 struct
+type Result0 struct {
+	Location []Location0 `xml:"location"`
+}
+
+// Result1 struct
+type Result1 struct {
+	Location []Location1 `xml:"dataset>location"`
+}
 
 const timeZone = "Asia/Taipei"
 
@@ -30,75 +103,12 @@ func fetchXML(url string) []byte {
 }
 
 // GetInfo from "中央氣象局"
-func GetInfo() []string {
+func GetInfo(targets []string) ([]string, string) {
 	var msgs = []string{}
-
-	target := "新竹市"
 
 	rainLevel := map[string]float32{
 		"10minutes": 6.0,
 		"1hour":     30.0,
-	}
-
-	type WeatherElement struct {
-		Name  string  `xml:"elementName"`
-		Value float32 `xml:"elementValue>value"`
-	}
-
-	type Parameter struct {
-		Name  string `xml:"parameterName"`
-		Value string `xml:"parameterValue"`
-	}
-
-	type ValidTime struct {
-		StartTime time.Time `xml:"startTime"`
-		EndTime   time.Time `xml:"endTime"`
-	}
-
-	type AffectedAreas struct {
-		Name string `xml:"locationName"`
-	}
-
-	type HazardInfo0 struct {
-		Language     string `xml:"language"`
-		Phenomena    string `xml:"phenomena"`
-		Significance string `xml:"significance"`
-	}
-
-	type HazardInfo1 struct {
-		Language      string          `xml:"language"`
-		Phenomena     string          `xml:"phenomena"`
-		AffectedAreas []AffectedAreas `xml:"affectedAreas>location"`
-	}
-
-	type Hazards struct {
-		Info       HazardInfo0 `xml:"info"`
-		ValidTime  ValidTime   `xml:"validTime"`
-		HazardInfo HazardInfo1 `xml:"hazard>info"`
-	}
-
-	type Location0 struct {
-		Lat            float32          `xml:"lat"`
-		Lng            float32          `xml:"lng"`
-		Name           string           `xml:"locationName"`
-		StationID      string           `xml:"stationId"`
-		Time           time.Time        `xml:"time>obsTime"`
-		WeatherElement []WeatherElement `xml:"weatherElement"`
-		Parameter      []Parameter      `xml:"parameter"`
-	}
-
-	type Location1 struct {
-		Geocode int     `xml:"geocode"`
-		Name    string  `xml:"locationName"`
-		Hazards Hazards `xml:"hazardConditions>hazards"`
-	}
-
-	type Result0 struct {
-		Location []Location0 `xml:"location"`
-	}
-
-	type Result1 struct {
-		Location []Location1 `xml:"dataset>location"`
 	}
 
 	authKey := "CWB-FB35C2AC-9286-4B7E-AD11-6BBB7F2855F7"
@@ -111,12 +121,12 @@ func GetInfo() []string {
 	err := xml.Unmarshal([]byte(xmldata0), &v0)
 	if err != nil {
 		log.Printf("error: %v", err)
-		return []string{}
+		return []string{}, ""
 	}
 
 	for _, location := range v0.Location {
 		for _, parameter := range location.Parameter {
-			if parameter.Name == "CITY" && parameter.Value == target {
+			if parameter.Name == "CITY" && parameter.Value == targets[0] {
 				for _, element := range location.WeatherElement {
 					switch element.Name {
 					case "MIN_10":
@@ -151,7 +161,7 @@ func GetInfo() []string {
 	v1 := Result1{}
 	if xml.Unmarshal([]byte(xmldata1), &v1) != nil {
 		log.Printf("error: %v", err)
-		return []string{}
+		return []string{}, ""
 	}
 
 	local := time.Now()
@@ -161,22 +171,39 @@ func GetInfo() []string {
 	}
 
 	var hazardmsgs = ""
-	for _, location := range v1.Location {
+	var token = ""
+	for i, location := range v1.Location {
+		if i == 0 {
+			token = token + strconv.Itoa(location.Geocode)
+		}
 		if location.Hazards.Info.Phenomena != "" && location.Hazards.ValidTime.EndTime.After(local) {
-			log.Println("***************************************")
-			log.Printf("【%s%s%s】影響地區：", location.Name, location.Hazards.Info.Phenomena, location.Hazards.Info.Significance)
-			m := fmt.Sprintf("【%s%s%s】影響地區：", location.Name, location.Hazards.Info.Phenomena, location.Hazards.Info.Significance)
-			for _, str := range location.Hazards.HazardInfo.AffectedAreas {
-				log.Printf("%s ", str.Name)
-				m = m + fmt.Sprintf("%s ", str.Name)
+			if targets != nil {
+				for _, name := range targets {
+					if name == location.Name {
+						hazardmsgs = hazardmsgs + saveHazards(location)
+					}
+				}
+			} else {
+				hazardmsgs = hazardmsgs + saveHazards(location)
 			}
-			m = m + fmt.Sprintf("\n影響時間為 %s 到 %s\n", location.Hazards.ValidTime.StartTime.Format("01/02 15:04"), location.Hazards.ValidTime.EndTime.Format("01/02 15:04"))
-			log.Println("\n***************************************")
-			hazardmsgs = hazardmsgs + m
 		}
 	}
 
 	msgs = append(msgs, hazardmsgs)
 
-	return msgs
+	return msgs, token
+}
+
+func saveHazards(location Location1) string {
+	log.Println("***************************************")
+	log.Printf("【%s%s%s】影響地區：", location.Name, location.Hazards.Info.Phenomena, location.Hazards.Info.Significance)
+	m := fmt.Sprintf("【%s%s%s】影響地區：", location.Name, location.Hazards.Info.Phenomena, location.Hazards.Info.Significance)
+	for _, str := range location.Hazards.HazardInfo.AffectedAreas {
+		log.Printf("%s ", str.Name)
+		m = m + fmt.Sprintf("%s ", str.Name)
+	}
+	m = m + fmt.Sprintf("\n(影響時間為 %s 到 %s)\n", location.Hazards.ValidTime.StartTime.Format("01/02 15:04"), location.Hazards.ValidTime.EndTime.Format("01/02 15:04"))
+	log.Println("\n***************************************")
+
+	return m
 }
