@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+const timeZone = "Asia/Taipei"
+
 func fetchXML(url string) []byte {
 	resp, err := http.Get(url)
 	if err != nil {
@@ -152,12 +154,19 @@ func GetInfo() []string {
 		return []string{}
 	}
 
+	local := time.Now()
+	location, err := time.LoadLocation(timeZone)
+	if err == nil {
+		local = local.In(location)
+	}
+
 	var hazardmsgs = ""
 	for _, location := range v1.Location {
-		if location.Hazards.Info.Phenomena != "" {
+		if location.Hazards.Info.Phenomena != "" && location.Hazards.ValidTime.EndTime.After(local) {
 			log.Println("***************************************")
 			log.Printf("【%s%s%s】影響地區：", location.Name, location.Hazards.Info.Phenomena, location.Hazards.Info.Significance)
 			m := fmt.Sprintf("【%s%s%s】影響地區：", location.Name, location.Hazards.Info.Phenomena, location.Hazards.Info.Significance)
+			m = m + fmt.Sprintf("，影響時間為 %s 到 %s", location.Hazards.ValidTime.StartTime.Format("01/02 15:04"), location.Hazards.ValidTime.EndTime.Format("01/02 15:04"))
 			for _, str := range location.Hazards.HazardInfo.AffectedAreas {
 				log.Printf("%s ", str.Name)
 				m = m + fmt.Sprintf("%s ", str.Name)
