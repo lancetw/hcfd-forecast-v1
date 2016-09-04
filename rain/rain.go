@@ -72,16 +72,18 @@ type Hazards struct {
 	HazardInfo HazardInfo1 `xml:"hazard>info"`
 }
 
-// Result0 struct
-type Result0 struct {
+// ResultRaining struct
+type ResultRaining struct {
 	Location []Location0 `xml:"location"`
 }
 
-// Result1 struct
-type Result1 struct {
+// ResultWarning struct
+type ResultWarning struct {
 	Location []Location1 `xml:"dataset>location"`
 }
 
+const baseURL = "http://opendata.cwb.gov.tw/opendataapi?dataid="
+const authKey = "CWB-FB35C2AC-9286-4B7E-AD11-6BBB7F2855F7"
 const timeZone = "Asia/Taipei"
 
 func fetchXML(url string) []byte {
@@ -101,8 +103,8 @@ func fetchXML(url string) []byte {
 	return xmldata
 }
 
-// GetInfo from "中央氣象局"
-func GetInfo(place string, targets []string) ([]string, string) {
+// GetRainingInfo "雨量警示"
+func GetRainingInfo(targets []string) ([]string, string) {
 	var token = ""
 	var msgs = []string{}
 
@@ -111,43 +113,42 @@ func GetInfo(place string, targets []string) ([]string, string) {
 		"1hour":     -1, // 30
 	}
 
-	authKey := "CWB-FB35C2AC-9286-4B7E-AD11-6BBB7F2855F7"
-	baseURL := "http://opendata.cwb.gov.tw/opendataapi?dataid="
+	url := baseURL + "O-A0002-001" + "&authorizationkey=" + authKey
+	xmldata := fetchXML(url)
 
-	url0 := baseURL + "O-A0002-001" + "&authorizationkey=" + authKey
-	xmldata0 := fetchXML(url0)
-
-	v0 := Result0{}
-	err := xml.Unmarshal([]byte(xmldata0), &v0)
+	v := ResultRaining{}
+	err := xml.Unmarshal([]byte(xmldata), &v)
 	if err != nil {
 		log.Printf("error: %v", err)
 		return []string{}, ""
 	}
 
-	for _, location := range v0.Location {
+	for _, location := range v.Location {
 		for _, parameter := range location.Parameter {
-			if parameter.Name == "CITY" && parameter.Value == place {
-				for _, element := range location.WeatherElement {
-					switch element.Name {
-					case "MIN_10":
-						if element.Value < 0 {
-							log.Printf("%s：%s", "十分鐘雨量", "-")
-						} else {
-							token = location.Time.Format("20060102150405")
-							log.Printf("%s：%.2f", "十分鐘雨量", element.Value)
-							if element.Value >= rainLevel["10minutes"] {
-								msgs = append(msgs, fmt.Sprintf("[豪大雨警報] %s %s 為 %f", location.Name, "十分鐘雨量", element.Value))
+			for _, target := range targets {
+				if parameter.Name == "CITY" && parameter.Value == target {
+					for _, element := range location.WeatherElement {
+						switch element.Name {
+						case "MIN_10":
+							if element.Value < 0 {
+								log.Printf("%s：%s", "十分鐘雨量", "-")
+							} else {
+								token = location.Time.Format("20060102150405")
+								log.Printf("%s：%.2f", "十分鐘雨量", element.Value)
+								if element.Value >= rainLevel["10minutes"] {
+									msgs = append(msgs, fmt.Sprintf("[豪大雨警報] %s %s %.2f", location.Name, "十分鐘雨量", element.Value))
+								}
 							}
-						}
-					case "RAIN":
-						if element.Value < 0 {
-							log.Printf("[%s]", location.Name)
-							log.Printf("%s：%s", "一小時雨量", "-")
-						} else {
-							log.Printf("[%s]", location.Name)
-							log.Printf("%s：%.2f", "一小時雨量", element.Value)
-							if element.Value >= rainLevel["1hour"] {
-								msgs = append(msgs, fmt.Sprintf("[豪大雨警報] %s %s 為 %f", location.Name, "一小時雨量", element.Value))
+						case "RAIN":
+							if element.Value < 0 {
+								log.Printf("[%s]", location.Name)
+								log.Printf("%s：%s", "一小時雨量", "-")
+							} else {
+								log.Printf("[%s]", location.Name)
+								log.Printf("%s：%.2f", "一小時雨量", element.Value)
+								if element.Value >= rainLevel["1hour"] {
+									msgs = append(msgs, fmt.Sprintf("[豪大雨警報] %s %s %.2f", location.Name, "一小時雨量", element.Value))
+								}
 							}
 						}
 					}
@@ -156,11 +157,20 @@ func GetInfo(place string, targets []string) ([]string, string) {
 		}
 	}
 
-	url1 := baseURL + "W-C0033-001" + "&authorizationkey=" + authKey
-	xmldata1 := fetchXML(url1)
+	return msgs, token
+}
 
-	v1 := Result1{}
-	if xml.Unmarshal([]byte(xmldata1), &v1) != nil {
+// GetWarningInfo "豪大雨特報"
+func GetWarningInfo(targets []string) ([]string, string) {
+	var token = ""
+	var msgs = []string{}
+
+	url := baseURL + "W-C0033-001" + "&authorizationkey=" + authKey
+	xmldata := fetchXML(url)
+
+	v := ResultWarning{}
+	err := xml.Unmarshal([]byte(xmldata), &v)
+	if err != nil {
 		log.Printf("error: %v", err)
 		return []string{}, ""
 	}
@@ -173,7 +183,7 @@ func GetInfo(place string, targets []string) ([]string, string) {
 
 	var hazardmsgs = ""
 
-	for i, location := range v1.Location {
+	for i, location := range v.Location {
 		if i == 0 {
 			token = location.Hazards.ValidTime.StartTime.Format("20060102150405") + " " + location.Hazards.ValidTime.EndTime.Format("20060102150405")
 		}

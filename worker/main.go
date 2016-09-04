@@ -30,22 +30,37 @@ func main() {
 	for {
 		c := db.Connect(os.Getenv("REDISTOGO_URL"))
 
-		targets := []string{"新竹市", "新竹縣", "台中市", "高雄市", "台北市"}
-		msgs, token := rain.GetInfo("新竹市", targets)
+		targets0 := []string{"新竹市", "新竹縣"}
+		msgs0, token0 := rain.GetRainingInfo(targets0)
 
-		n, addErr := c.Do("SADD", "token", token)
+		n0, addErr := c.Do("SADD", "token", token0)
 		if addErr != nil {
-			log.Println("SADD to redis error", addErr, n)
+			log.Println("SADD to redis error", addErr, n0)
 		}
 
-		status, getErr := redis.Int(c.Do("SISMEMBER", "token", token))
+		status0, getErr := redis.Int(c.Do("SISMEMBER", "token", token0))
 		if getErr != nil {
 			if err != nil {
 				log.Println(err)
 			}
 		}
 
-		if status == 0 {
+		targets1 := []string{"新竹市", "新竹縣", "台中市", "高雄市", "台北市"}
+		msgs1, token1 := rain.GetWarningInfo(targets1)
+
+		n, addErr := c.Do("SADD", "token", token1)
+		if addErr != nil {
+			log.Println("SADD to redis error", addErr, n)
+		}
+
+		status1, getErr := redis.Int(c.Do("SISMEMBER", "token", token1))
+		if getErr != nil {
+			if err != nil {
+				log.Println(err)
+			}
+		}
+
+		if status0 == 0 && status1 == 0 {
 			log.Println("\n***************************************")
 
 			users, smembersErr := redis.Strings(c.Do("SMEMBERS", "user"))
@@ -60,7 +75,13 @@ func main() {
 				}
 
 				for _, contentTo := range users {
-					for _, msg := range msgs {
+					for _, msg := range msgs0 {
+						_, err = bot.SendText([]string{contentTo}, msg)
+						if err != nil {
+							log.Println(err)
+						}
+					}
+					for _, msg := range msgs1 {
 						_, err = bot.SendText([]string{contentTo}, msg)
 						if err != nil {
 							log.Println(err)
