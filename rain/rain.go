@@ -153,7 +153,7 @@ func GetInfo() []string {
 	}
 
 	for _, location := range v1.Location {
-		if location.Name == target && location.Hazards.Info.Phenomena != "" {
+		if location.Hazards.Info.Phenomena != "" {
 			log.Println("***************************************")
 			log.Printf("%s%s 影響地區：", location.Hazards.Info.Phenomena, location.Hazards.Info.Significance)
 			m := fmt.Sprintf("%s%s 影響地區：", location.Hazards.Info.Phenomena, location.Hazards.Info.Significance)

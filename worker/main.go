@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -45,13 +44,6 @@ func main() {
 			}
 
 			for _, contentTo := range users {
-				_, err = bot.SendText([]string{contentTo}, fmt.Sprintf("現在時間：%v", local.Format("15:04")))
-				if err != nil {
-					log.Println(err)
-				}
-			}
-
-			for _, contentTo := range users {
 				for _, msg := range msgs {
 					_, err = bot.SendText([]string{contentTo}, msg)
 					if err != nil {
@@ -63,6 +55,6 @@ func main() {
 
 		defer c.Close()
 
-		time.Sleep(60 * 10 * time.Second)
+		time.Sleep(5 * 60 * time.Second)
 	}
 }
