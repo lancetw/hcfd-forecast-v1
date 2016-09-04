@@ -107,8 +107,8 @@ func GetInfo(place string, targets []string) ([]string, string) {
 	var msgs = []string{}
 
 	rainLevel := map[string]float32{
-		"10minutes": -1,
-		"1hour":     -1,
+		"10minutes": 6,
+		"1hour":     30,
 	}
 
 	authKey := "CWB-FB35C2AC-9286-4B7E-AD11-6BBB7F2855F7"
@@ -135,7 +135,7 @@ func GetInfo(place string, targets []string) ([]string, string) {
 						} else {
 							token = location.Time.Format("20060102150405")
 							log.Printf("%s：%.2f", "十分鐘雨量", element.Value)
-							if element.Value > rainLevel["10minutes"] {
+							if element.Value >= rainLevel["10minutes"] {
 								msgs = append(msgs, fmt.Sprintf("[豪大雨警報] %s %s 為 %f", location.Name, "十分鐘雨量", element.Value))
 							}
 						}
@@ -146,7 +146,7 @@ func GetInfo(place string, targets []string) ([]string, string) {
 						} else {
 							log.Printf("[%s]", location.Name)
 							log.Printf("%s：%.2f", "一小時雨量", element.Value)
-							if element.Value > rainLevel["1hour"] {
+							if element.Value >= rainLevel["1hour"] {
 								msgs = append(msgs, fmt.Sprintf("[豪大雨警報] %s %s 為 %f", location.Name, "一小時雨量", element.Value))
 							}
 						}

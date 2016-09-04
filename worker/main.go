@@ -31,7 +31,7 @@ func main() {
 		c := db.Connect(os.Getenv("REDISTOGO_URL"))
 
 		targets := []string{"新竹市", "新竹縣", "台中市", "高雄市", "台北市"}
-		msgs, token := rain.GetInfo(targets[0], targets)
+		msgs, token := rain.GetInfo("新竹市", targets)
 
 		n, addErr := c.Do("SADD", "token", token)
 		if addErr != nil {
