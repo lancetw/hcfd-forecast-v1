@@ -152,7 +152,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 				}
 			case "清除":
 				c := db.Connect(os.Getenv("REDISTOGO_URL"))
-				status, clearErr := c.Do("SREM", "token")
+				status, clearErr := c.Do("DEL", "token")
 				if clearErr != nil {
 					log.Println("DEL to redis error", clearErr, status)
 				}
