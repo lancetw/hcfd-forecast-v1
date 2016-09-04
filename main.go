@@ -167,7 +167,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					}
 				}
 
-			case "清除":
+			case "重開":
 				c := db.Connect(os.Getenv("REDISTOGO_URL"))
 				status0, clearErr0 := c.Do("DEL", "token0")
 				if clearErr0 != nil {
@@ -178,7 +178,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					log.Println("DEL to redis error", clearErr1, status1)
 				}
 
-				_, err = bot.SendText([]string{content.From}, "清除完成 :D")
+				_, err = bot.SendText([]string{content.From}, "已重開")
 				if err != nil {
 					log.Println(err)
 				}

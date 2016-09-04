@@ -137,7 +137,7 @@ func GetRainingInfo(targets []string) ([]string, string) {
 									token = location.Time.Format("20060102150405")
 									log.Printf("%s：%.2f", "十分鐘雨量", element.Value)
 									if element.Value >= rainLevel["10minutes"] {
-										msgs = append(msgs, fmt.Sprintf("[%s 豪大雨警報] %s：%.2f", location.Name, "十分鐘雨量", element.Value))
+										msgs = append(msgs, fmt.Sprintf("【%s 豪大雨警報】 %s：%.2f", location.Name, "十分鐘雨量", element.Value))
 									}
 								}
 							case "RAIN":
@@ -148,7 +148,7 @@ func GetRainingInfo(targets []string) ([]string, string) {
 									log.Printf("[%s]", location.Name)
 									log.Printf("%s：%.2f", "一小時雨量", element.Value)
 									if element.Value >= rainLevel["1hour"] {
-										msgs = append(msgs, fmt.Sprintf("[%s 豪大雨警報] %s：%.2f", location.Name, "每小時雨量", element.Value))
+										msgs = append(msgs, fmt.Sprintf("【%s 豪大雨警報】 %s：%.2f", location.Name, "每小時雨量", element.Value))
 									}
 								}
 							}
