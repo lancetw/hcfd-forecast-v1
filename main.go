@@ -72,7 +72,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 				log.Println(err)
 				return
 			}
-			_, err = bot.SendText([]string{from}, user.Contacts[0].DisplayName+" 安安，目前可用指令為：「加入」「退出」「狀態」。")
+			_, err = bot.SendText([]string{from}, user.Contacts[0].DisplayName+" 安安，目前可用指令為：「加入」「退出」「警報」「狀態」「時間」")
 			if err != nil {
 				log.Println(err)
 			}
@@ -89,72 +89,73 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			switch text.Text {
 			case "加入":
-				if user.Count == 1 {
-					c := db.Connect(os.Getenv("REDISTOGO_URL"))
-					n, appendErr := c.Do("SADD", "user", content.From)
-					if appendErr != nil {
-						log.Println("SET to redis error", appendErr, n)
-					} else {
-						_, err = bot.SendText([]string{content.From}, user.Contacts[0].DisplayName+" 您好，已將您加入傳送對象 ^＿^ ")
-						if err != nil {
-							log.Println(err)
-						}
-					}
-					defer c.Close()
-				}
-			case "退出":
-				if user.Count == 1 {
-					c := db.Connect(os.Getenv("REDISTOGO_URL"))
-					n, setErr := c.Do("SREM", "user", content.From)
-					if setErr != nil {
-						log.Println("DEL to redis error", setErr, n)
-					} else {
-						_, err = bot.SendText([]string{content.From}, user.Contacts[0].DisplayName+" 掰掰 Q＿Q")
-						if err != nil {
-							log.Println(err)
-						}
-					}
-					defer c.Close()
-				}
-			case "狀態":
-				if user.Count == 1 {
-					c := db.Connect(os.Getenv("REDISTOGO_URL"))
-					status, getErr := redis.Int(c.Do("SISMEMBER", "user", content.From))
-					if getErr != nil || status == 0 {
-						_, err = bot.SendText([]string{content.From}, "目前沒有登記您的編號喔！")
-						if err != nil {
-							log.Println(err)
-						}
-					} else {
-						_, err = bot.SendText([]string{content.From}, "已登記完成，未來將會傳送訊息給您 :D")
-						if err != nil {
-							log.Println(err)
-						}
-					}
-					defer c.Close()
-				}
-			case "時間":
-				if user.Count == 1 {
-					local := time.Now()
-					location, timezoneErr := time.LoadLocation(timeZone)
-					if timezoneErr == nil {
-						local = local.In(location)
-					}
-					_, err = bot.SendText([]string{content.From}, local.Format("2006/01/02 15:04:05"))
+				c := db.Connect(os.Getenv("REDISTOGO_URL"))
+				n, appendErr := c.Do("SADD", "user", content.From)
+				if appendErr != nil {
+					log.Println("SET to redis error", appendErr, n)
+				} else {
+					_, err = bot.SendText([]string{content.From}, user.Contacts[0].DisplayName+" 您好，已將您加入傳送對象 ^＿^ ")
 					if err != nil {
 						log.Println(err)
 					}
 				}
-			case "警報":
-				if user.Count == 1 {
-					msgs, _ := rain.GetInfo("新竹市", nil)
-					for _, msg := range msgs {
-						_, err = bot.SendText([]string{content.From}, msg)
-						if err != nil {
-							log.Println(err)
-						}
+				defer c.Close()
+
+			case "退出":
+				c := db.Connect(os.Getenv("REDISTOGO_URL"))
+				n, setErr := c.Do("SREM", "user", content.From)
+				if setErr != nil {
+					log.Println("DEL to redis error", setErr, n)
+				} else {
+					_, err = bot.SendText([]string{content.From}, user.Contacts[0].DisplayName+" 掰掰 Q＿Q")
+					if err != nil {
+						log.Println(err)
 					}
 				}
+				defer c.Close()
+
+			case "狀態":
+				c := db.Connect(os.Getenv("REDISTOGO_URL"))
+				status, getErr := redis.Int(c.Do("SISMEMBER", "user", content.From))
+				if getErr != nil || status == 0 {
+					_, err = bot.SendText([]string{content.From}, "目前沒有登記您的編號喔！")
+					if err != nil {
+						log.Println(err)
+					}
+				} else {
+					_, err = bot.SendText([]string{content.From}, "已登記完成，未來將會傳送訊息給您 :D")
+					if err != nil {
+						log.Println(err)
+					}
+				}
+				defer c.Close()
+
+			case "時間":
+				local := time.Now()
+				location, timezoneErr := time.LoadLocation(timeZone)
+				if timezoneErr == nil {
+					local = local.In(location)
+				}
+				_, err = bot.SendText([]string{content.From}, local.Format("2006/01/02 15:04:05"))
+				if err != nil {
+					log.Println(err)
+				}
+
+			case "警報":
+				msgs, _ := rain.GetInfo("新竹市", nil)
+				for _, msg := range msgs {
+					_, err = bot.SendText([]string{content.From}, msg)
+					if err != nil {
+						log.Println(err)
+					}
+				}
+
+			default:
+				_, err = bot.SendText([]string{content.From}, "指令錯誤，請重試")
+				if err != nil {
+					log.Println(err)
+				}
+
 			}
 		}
 	}
