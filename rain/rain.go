@@ -202,6 +202,7 @@ func saveHazards(location Location1) string {
 		log.Printf("%s ", str.Name)
 		m = m + fmt.Sprintf("%s ", str.Name)
 	}
+	m = m + "\n"
 	log.Println("\n***************************************")
 
 	return m
