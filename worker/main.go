@@ -30,7 +30,7 @@ func main() {
 	for {
 		c := db.Connect(os.Getenv("REDISTOGO_URL"))
 
-		targets0 := []string{"新竹市", "新竹縣"}
+		targets0 := []string{"新竹市"}
 		msgs0, token0 := rain.GetRainingInfo(targets0)
 
 		status0, getErr := redis.Int(c.Do("SISMEMBER", "token0", token0))
