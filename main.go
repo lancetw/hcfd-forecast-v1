@@ -72,7 +72,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 				log.Println(err)
 				return
 			}
-			_, err = bot.SendText([]string{from}, user.Contacts[0].DisplayName+" 安安，目前可用指令為：「加入」「退出」「警報」「狀態」「時間」")
+			_, err = bot.SendText([]string{from}, user.Contacts[0].DisplayName+" 您好，目前可用指令為：「加入」「退出」「警報」「狀態」「時間」")
 			if err != nil {
 				log.Println(err)
 			}
@@ -90,9 +90,9 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			switch text.Text {
 			case "加入":
 				c := db.Connect(os.Getenv("REDISTOGO_URL"))
-				n, appendErr := c.Do("SADD", "user", content.From)
-				if appendErr != nil {
-					log.Println("SET to redis error", appendErr, n)
+				n, addErr := c.Do("SADD", "user", content.From)
+				if addErr != nil {
+					log.Println("SADD to redis error", addErr, n)
 				} else {
 					_, err = bot.SendText([]string{content.From}, user.Contacts[0].DisplayName+" 您好，已將您加入傳送對象 ^＿^ ")
 					if err != nil {
@@ -123,7 +123,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						log.Println(err)
 					}
 				} else {
-					_, err = bot.SendText([]string{content.From}, "已登記完成，未來將會傳送訊息給您 :D")
+					_, err = bot.SendText([]string{content.From}, "已登記完成，未來將會傳送天氣警報資訊給您 :D")
 					if err != nil {
 						log.Println(err)
 					}

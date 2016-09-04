@@ -7,7 +7,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strconv"
 	"time"
 )
 
@@ -174,7 +173,7 @@ func GetInfo(place string, targets []string) ([]string, string) {
 	var token = ""
 	for i, location := range v1.Location {
 		if i == 0 {
-			token = token + strconv.Itoa(location.Geocode)
+			token = location.Hazards.ValidTime.StartTime.Format("20060102150405") + " " + location.Hazards.ValidTime.EndTime.Format("20060102150405")
 		}
 		if location.Hazards.Info.Phenomena != "" && location.Hazards.ValidTime.EndTime.After(local) {
 			if targets != nil {
