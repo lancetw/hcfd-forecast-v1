@@ -143,7 +143,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 				}
 
 			case "雨量":
-				msgs, _ := rain.GetRainingInfo(nil)
+				msgs, _ := rain.GetRainingInfo([]string{"新竹市"})
 				for _, msg := range msgs {
 					_, err = bot.SendText([]string{content.From}, msg)
 					if err != nil {
