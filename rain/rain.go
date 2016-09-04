@@ -103,11 +103,12 @@ func fetchXML(url string) []byte {
 
 // GetInfo from "中央氣象局"
 func GetInfo(place string, targets []string) ([]string, string) {
+	var token = ""
 	var msgs = []string{}
 
 	rainLevel := map[string]float32{
-		"10minutes": 6.0,
-		"1hour":     30.0,
+		"10minutes": -1,
+		"1hour":     -1,
 	}
 
 	authKey := "CWB-FB35C2AC-9286-4B7E-AD11-6BBB7F2855F7"
@@ -132,6 +133,7 @@ func GetInfo(place string, targets []string) ([]string, string) {
 						if element.Value < 0 {
 							log.Printf("%s：%s", "十分鐘雨量", "-")
 						} else {
+							token = location.Time.Format("20060102150405")
 							log.Printf("%s：%.2f", "十分鐘雨量", element.Value)
 							if element.Value > rainLevel["10minutes"] {
 								msgs = append(msgs, fmt.Sprintf("[豪大雨警報] %s 地區 %s 為 %f", element.Name, "十分鐘雨量", element.Value))
@@ -170,7 +172,7 @@ func GetInfo(place string, targets []string) ([]string, string) {
 	}
 
 	var hazardmsgs = ""
-	var token = ""
+
 	for i, location := range v1.Location {
 		if i == 0 {
 			token = location.Hazards.ValidTime.StartTime.Format("20060102150405") + " " + location.Hazards.ValidTime.EndTime.Format("20060102150405")
