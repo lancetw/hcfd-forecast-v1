@@ -107,8 +107,8 @@ func GetInfo(place string, targets []string) ([]string, string) {
 	var msgs = []string{}
 
 	rainLevel := map[string]float32{
-		"10minutes": 6,
-		"1hour":     30,
+		"10minutes": -1, // 6
+		"1hour":     -1, // 30
 	}
 
 	authKey := "CWB-FB35C2AC-9286-4B7E-AD11-6BBB7F2855F7"
