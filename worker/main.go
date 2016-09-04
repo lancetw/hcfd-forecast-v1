@@ -72,6 +72,6 @@ func main() {
 
 		defer c.Close()
 
-		time.Sleep(5 * 60 * time.Second)
+		time.Sleep(60 * time.Second)
 	}
 }
