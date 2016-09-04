@@ -58,6 +58,25 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	for _, result := range received.Results {
 		content := result.Content()
+		if content != nil && content.IsOperation && content.OpType == linebot.OpTypeAddedAsFriend {
+			op, err := content.OperationContent()
+			if err != nil {
+				log.Println(err)
+				return
+			}
+			from := op.Params[0]
+
+			user, err := bot.GetUserProfile([]string{from})
+			if err != nil {
+				log.Println(err)
+				return
+			}
+			_, err = bot.SendText([]string{from}, user.Contacts[0].DisplayName+" 安安，目前可用指令為：「加入」「退出」「狀態」。")
+			if err != nil {
+				log.Println(err)
+			}
+		}
+
 		if content != nil && content.IsMessage && content.ContentType == linebot.ContentTypeText {
 			user, err := bot.GetUserProfile([]string{content.From})
 			if err != nil {
@@ -106,7 +125,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 							log.Println(err)
 						}
 					} else {
-						_, err = bot.SendText([]string{content.From}, "OK")
+						_, err = bot.SendText([]string{content.From}, "已登記完成，未來將會傳送訊息給您 :D")
 						if err != nil {
 							log.Println(err)
 						}

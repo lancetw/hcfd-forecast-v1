@@ -123,7 +123,7 @@ func GetInfo() []string {
 						} else {
 							log.Printf("%s：%.2f", "十分鐘雨量", element.Value)
 							if element.Value > rainLevel["10minutes"] {
-								msgs = append(msgs, fmt.Sprintf("[大雨通報] %s 地區 %s 為 %f", element.Name, "十分鐘雨量", element.Value))
+								msgs = append(msgs, fmt.Sprintf("[豪大雨警報] %s 地區 %s 為 %f", element.Name, "十分鐘雨量", element.Value))
 							}
 						}
 					case "RAIN":
@@ -134,7 +134,7 @@ func GetInfo() []string {
 							log.Printf("[%s]", location.Name)
 							log.Printf("%s：%.2f", "一小時雨量", element.Value)
 							if element.Value > rainLevel["1hour"] {
-								msgs = append(msgs, fmt.Sprintf("[大雨通報] %s 地區 %s 為 %f", element.Name, "一小時雨量", element.Value))
+								msgs = append(msgs, fmt.Sprintf("[豪大雨警報] %s 地區 %s 為 %f", element.Name, "一小時雨量", element.Value))
 							}
 						}
 					}
@@ -155,14 +155,14 @@ func GetInfo() []string {
 	for _, location := range v1.Location {
 		if location.Hazards.Info.Phenomena != "" {
 			log.Println("***************************************")
-			log.Printf("%s %s%s 影響地區：", location.Name, location.Hazards.Info.Phenomena, location.Hazards.Info.Significance)
-			m := fmt.Sprintf("%s %s%s 影響地區：", location.Name, location.Hazards.Info.Phenomena, location.Hazards.Info.Significance)
+			log.Printf("【%s%s%s】影響地區：", location.Name, location.Hazards.Info.Phenomena, location.Hazards.Info.Significance)
+			m := fmt.Sprintf("【%s%s%s】影響地區：", location.Name, location.Hazards.Info.Phenomena, location.Hazards.Info.Significance)
 			for _, str := range location.Hazards.HazardInfo.AffectedAreas {
 				log.Printf("%s ", str.Name)
 				m = m + fmt.Sprintf("%s ", str.Name)
 			}
 			log.Println("\n***************************************")
-
+			msgs = append(msgs, m)
 		}
 	}
 
