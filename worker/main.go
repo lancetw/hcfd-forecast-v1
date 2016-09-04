@@ -63,7 +63,9 @@ func main() {
 				if err == nil {
 					local = local.In(location)
 				}
-
+				log.Println(users)
+				log.Println(msgs0)
+				log.Println(msgs1)
 				for _, contentTo := range users {
 					for _, msg := range msgs0 {
 						_, err = bot.SendText([]string{contentTo}, msg)

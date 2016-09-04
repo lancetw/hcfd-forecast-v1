@@ -128,7 +128,6 @@ func GetRainingInfo(targets []string) ([]string, string) {
 			if parameter.Name == "CITY" {
 				for _, target := range targets {
 					if parameter.Value == target {
-						log.Println("TESTEST", target)
 						for _, element := range location.WeatherElement {
 							switch element.Name {
 							case "MIN_10":
