@@ -28,7 +28,7 @@ func main() {
 	}
 
 	for {
-		targets := []string{"新竹市", "新竹縣", "屏東縣", "高雄市", "台中市"}
+		targets := []string{"新竹市", "新竹縣"}
 		msgs, _ := rain.GetInfo(targets[0], targets)
 		log.Println("\n***************************************")
 
