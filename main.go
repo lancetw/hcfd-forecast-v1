@@ -170,7 +170,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 				if clearErr1 != nil {
 					log.Println("DEL to redis error", clearErr1, status1)
 				}
-				if status0 == 0 && status1 == 0 {
+				if status0 == 1 && status1 == 1 {
 					_, err = bot.SendText([]string{content.From}, "清除完成 :D")
 					if err != nil {
 						log.Println(err)
