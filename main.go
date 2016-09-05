@@ -233,7 +233,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 				}
 
 				beauty := new(Beauty)
-				getJSON("http://beauty.zones.gamebase.com.tw/wall?json", &beauty)
+				getJSONErr := getJSON("http://beauty.zones.gamebase.com.tw/wall?json", &beauty)
 				if len(beauty.Meis) > 0 {
 					for no, data := range beauty.Meis {
 						_, err = bot.SendText([]string{content.From}, fmt.Sprintf("%s %v", no, data))
@@ -247,6 +247,10 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					if err != nil {
 						log.Println(err)
 					}
+				}
+
+				if getJSONErr != nil {
+					log.Println(getJSONErr)
 				}
 
 			default:
