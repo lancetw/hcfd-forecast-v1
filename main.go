@@ -159,7 +159,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			case "雨量":
 				target := []string{"新竹市"}
 				if cmd[1] != "" {
-					target = []string{cmd[1]}
+					target[0] = cmd[1]
 				}
 
 				msgs, _ := rain.GetRainingInfo(target, true)
