@@ -218,15 +218,32 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					}
 				}
 
-			case "正妹":
-				type Beauty struct {
-					Count   int      `json:"count"`
-					PhotoID []string `json:"photoId"`
+			case "妹子":
+				type MeisData struct {
+					ID         string    `json:"id"`
+					Name       string    `json:"name"`
+					ImgNo      int       `json:"img_no"`
+					Fanpage    int       `json:"fanpage"`
+					Creator    int       `json:"creator"`
+					UpdateTime time.Time `json:"update_time"`
 				}
+
+				type Beauty struct {
+					Meis map[string]MeisData `json:"meis"`
+				}
+
 				beauty := new(Beauty)
-				getJSON("", &beauty)
-				if beauty.PhotoID[0] != "" {
-					_, err = bot.SendImage([]string{content.From}, beauty.PhotoID[0], beauty.PhotoID[0])
+				getJSON("http://beauty.zones.gamebase.com.tw/wall?json", &beauty)
+				if len(beauty.Meis) > 0 {
+					for no, data := range beauty.Meis {
+						_, err = bot.SendText([]string{content.From}, fmt.Sprintf("%s %v", no, data))
+						if err != nil {
+							log.Println(err)
+						}
+						break
+					}
+
+					//_, err = bot.SendImage([]string{content.From}, "", "")
 					if err != nil {
 						log.Println(err)
 					}
