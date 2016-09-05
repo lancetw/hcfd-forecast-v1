@@ -235,18 +235,29 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 				beauty := new(Beauty)
 				getJSONErr := getJSON("http://beauty.zones.gamebase.com.tw/wall?json", &beauty)
 				if len(beauty.Meis) > 0 {
-					for no, data := range beauty.Meis {
-						_, err = bot.SendText([]string{content.From}, fmt.Sprintf("%s %v", no, data))
+					for fbid, data := range beauty.Meis {
+						image := fmt.Sprintf("http://graph.facebook.com/%s/picture?type=large", fbid)
+						_, err = bot.SendImage([]string{content.From}, image, image)
 						if err != nil {
+							log.Println(err)
+						}
+
+						link := fmt.Sprintf("http://graph.facebook.com/%s", data.ID)
+						description := fmt.Sprintf("%s %s", data.Name, link)
+						_, err = bot.SendText([]string{content.From}, description)
+						if err != nil {
+							log.Println(err)
+						}
+						_, sendRichMessageErr := bot.NewRichMessage(200).
+							SetAction("MANGA", "manga", link).
+							SetListener("MANGA", 0, 0, 200, 200).
+							Send([]string{content.From}, image, data.Name)
+						if sendRichMessageErr != nil {
 							log.Println(err)
 						}
 						break
 					}
 
-					//_, err = bot.SendImage([]string{content.From}, "", "")
-					if err != nil {
-						log.Println(err)
-					}
 				}
 
 				if getJSONErr != nil {
