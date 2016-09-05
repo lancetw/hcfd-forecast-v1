@@ -216,14 +216,13 @@ func GetWarningInfo(targets []string) ([]string, string) {
 			if targets != nil {
 				for _, name := range targets {
 					if name == location.Name {
-						hazardmsgs = hazardmsgs + saveHazards(location) + "\n"
+						hazardmsgs = hazardmsgs + saveHazards(location) + "\n\n"
 					}
 				}
 			} else {
-				hazardmsgs = hazardmsgs + saveHazards(location) + "\n"
+				hazardmsgs = hazardmsgs + saveHazards(location) + "\n\n"
 			}
 		}
-		hazardmsgs = hazardmsgs + "\n"
 	}
 
 	if hazardmsgs != "" {
