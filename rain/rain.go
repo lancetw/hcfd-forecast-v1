@@ -223,10 +223,10 @@ func GetWarningInfo(targets []string) ([]string, string) {
 				hazardmsgs = hazardmsgs + saveHazards(location) + "\n"
 			}
 		}
+		hazardmsgs = hazardmsgs + "\n"
 	}
 
 	if hazardmsgs != "" {
-		hazardmsgs = hazardmsgs + "\n"
 		msgs = append(msgs, hazardmsgs)
 	}
 
