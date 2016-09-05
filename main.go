@@ -122,12 +122,12 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 				c := db.Connect(os.Getenv("REDISTOGO_URL"))
 				count, countErr := redis.Int(c.Do("SCARD", "user"))
 				if countErr != nil {
+					log.Println(countErr)
+				} else {
 					_, err = bot.SendText([]string{content.From}, fmt.Sprintf("目前有 %d 人加入自動警訊服務。", count))
 					if err != nil {
 						log.Println(err)
 					}
-				} else {
-					log.Println(countErr)
 				}
 
 				defer c.Close()
