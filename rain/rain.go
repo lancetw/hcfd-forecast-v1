@@ -104,7 +104,7 @@ func fetchXML(url string) []byte {
 }
 
 // GetRainingInfo "雨量警示"
-func GetRainingInfo(targets []string) ([]string, string) {
+func GetRainingInfo(targets []string, noLevel bool) ([]string, string) {
 	var token = ""
 	var msgs = []string{}
 
@@ -129,26 +129,43 @@ func GetRainingInfo(targets []string) ([]string, string) {
 				for _, target := range targets {
 					if parameter.Value == target {
 						for _, element := range location.WeatherElement {
+							token = location.Time.Format("20060102150405")
+
 							switch element.Name {
 							case "MIN_10":
-								if element.Value < 0 {
-									log.Printf("%s：%s", "十分鐘雨量", "-")
-								} else {
-									token = location.Time.Format("20060102150405")
-									log.Printf("%s：%.2f", "十分鐘雨量", element.Value)
-									if element.Value >= rainLevel["10minutes"] {
+								if noLevel {
+									if element.Value < 0 {
+										msgs = append(msgs, fmt.Sprintf("【%s 豪大雨警報】 %s：%s", location.Name, "十分鐘雨量", "-"))
+									} else {
 										msgs = append(msgs, fmt.Sprintf("【%s 豪大雨警報】 %s：%.2f", location.Name, "十分鐘雨量", element.Value))
+									}
+								} else {
+									if element.Value < 0 {
+										log.Printf("%s：%s", "十分鐘雨量", "-")
+									} else {
+										log.Printf("%s：%.2f", "十分鐘雨量", element.Value)
+										if element.Value >= rainLevel["10minutes"] {
+											msgs = append(msgs, fmt.Sprintf("【%s 豪大雨警報】 %s：%.2f", location.Name, "十分鐘雨量", element.Value))
+										}
 									}
 								}
 							case "RAIN":
-								if element.Value < 0 {
-									log.Printf("[%s]", location.Name)
-									log.Printf("%s：%s", "一小時雨量", "-")
-								} else {
-									log.Printf("[%s]", location.Name)
-									log.Printf("%s：%.2f", "一小時雨量", element.Value)
-									if element.Value >= rainLevel["1hour"] {
+								if noLevel {
+									if element.Value < 0 {
+										msgs = append(msgs, fmt.Sprintf("【%s 豪大雨警報】 %s：%s", location.Name, "每小時雨量", "-"))
+									} else {
 										msgs = append(msgs, fmt.Sprintf("【%s 豪大雨警報】 %s：%.2f", location.Name, "每小時雨量", element.Value))
+									}
+								} else {
+									if element.Value < 0 {
+										log.Printf("[%s]", location.Name)
+										log.Printf("%s：%s", "一小時雨量", "-")
+									} else {
+										log.Printf("[%s]", location.Name)
+										log.Printf("%s：%.2f", "一小時雨量", element.Value)
+										if element.Value >= rainLevel["1hour"] {
+											msgs = append(msgs, fmt.Sprintf("【%s 豪大雨警報】 %s：%.2f", location.Name, "每小時雨量", element.Value))
+										}
 									}
 								}
 							}
@@ -210,15 +227,13 @@ func GetWarningInfo(targets []string) ([]string, string) {
 }
 
 func saveHazards(location Location1) string {
-	log.Println("***************************************")
-	log.Printf("【%s%s%s】\n %s ~ %s\n影響地區：", location.Name, location.Hazards.Info.Phenomena, location.Hazards.Info.Significance, location.Hazards.ValidTime.StartTime.Format("01/02 15:04"), location.Hazards.ValidTime.EndTime.Format("01/02 15:04"))
-	m := fmt.Sprintf("【%s%s%s】\n %s ~ %s\n影響地區：", location.Name, location.Hazards.Info.Phenomena, location.Hazards.Info.Significance, location.Hazards.ValidTime.StartTime.Format("01/02 15:04"), location.Hazards.ValidTime.EndTime.Format("01/02 15:04"))
+	log.Printf("【%s%s%s】\n %s ~\n %s\n影響地區：", location.Name, location.Hazards.Info.Phenomena, location.Hazards.Info.Significance, location.Hazards.ValidTime.StartTime.Format("01/02 15:04"), location.Hazards.ValidTime.EndTime.Format("01/02 15:04"))
+	m := fmt.Sprintf("【%s%s%s】\n %s ~\n %s\n影響地區：", location.Name, location.Hazards.Info.Phenomena, location.Hazards.Info.Significance, location.Hazards.ValidTime.StartTime.Format("01/02 15:04"), location.Hazards.ValidTime.EndTime.Format("01/02 15:04"))
 	for _, str := range location.Hazards.HazardInfo.AffectedAreas {
 		log.Printf("%s ", str.Name)
 		m = m + fmt.Sprintf("%s ", str.Name)
 	}
-	m = m + "\n"
-	log.Println("\n***************************************")
+	m = m + "\n\n"
 
 	return m
 }
