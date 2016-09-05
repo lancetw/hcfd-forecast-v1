@@ -124,13 +124,13 @@ func GetRainingInfo(targets []string, noLevel bool) ([]string, string) {
 	}
 
 	for _, location := range v.Location {
+		var msg string
 		for _, parameter := range location.Parameter {
 			if parameter.Name == "CITY" {
 				for _, target := range targets {
 					if parameter.Value == target {
 						for _, element := range location.WeatherElement {
 							token = location.Time.Format("20060102150405")
-							var msg string
 
 							switch element.Name {
 							case "MIN_10":
@@ -171,14 +171,14 @@ func GetRainingInfo(targets []string, noLevel bool) ([]string, string) {
 									}
 								}
 							}
-
-							if msg != "" {
-								msgs = append(msgs, msg)
-							}
 						}
 					}
 				}
 			}
+		}
+
+		if msg != "" {
+			msgs = append(msgs, msg)
 		}
 	}
 
