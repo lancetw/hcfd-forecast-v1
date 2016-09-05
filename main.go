@@ -242,16 +242,17 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 							log.Println(err)
 						}
 
-						link := fmt.Sprintf("http://fb.me/%s", data.ID)
+						link := fmt.Sprintf("http://www.facebook.com/%s", data.ID)
 						description := fmt.Sprintf("%s %s", data.Name, link)
 						_, err = bot.SendText([]string{content.From}, description)
 						if err != nil {
 							log.Println(err)
 						}
-						_, sendRichMessageErr := bot.NewRichMessage(200).
-							SetAction("MANGA", "manga", image).
-							SetListener("MANGA", 0, 0, 200, 200).
-							Send([]string{content.From}, image, data.Name)
+						_, sendRichMessageErr := bot.NewMultipleMessage().
+							AddText(data.Name).
+							AddText(link).
+							AddImage(image, image).
+							Send([]string{content.From})
 						if sendRichMessageErr != nil {
 							log.Println(err)
 						}
