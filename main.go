@@ -220,12 +220,12 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 
 			case "妹子":
 				type MeisData struct {
-					ID         string    `json:"id"`
-					Name       string    `json:"name"`
-					ImgNo      int       `json:"img_no"`
-					Fanpage    int       `json:"fanpage"`
-					Creator    int       `json:"creator"`
-					UpdateTime time.Time `json:"update_time"`
+					ID         string `json:"id"`
+					Name       string `json:"name"`
+					ImgNo      int    `json:"img_no"`
+					Fanpage    int    `json:"fanpage"`
+					Creator    int    `json:"creator"`
+					UpdateTime string `json:"update_time"`
 				}
 
 				type Beauty struct {
