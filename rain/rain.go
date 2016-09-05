@@ -172,7 +172,9 @@ func GetRainingInfo(targets []string, noLevel bool) ([]string, string) {
 								}
 							}
 
-							msgs = append(msgs, msg)
+							if msg != "" {
+								msgs = append(msgs, msg)
+							}
 						}
 					}
 				}
