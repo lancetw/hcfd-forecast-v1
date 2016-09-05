@@ -120,7 +120,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 
 			case "服務":
 				c := db.Connect(os.Getenv("REDISTOGO_URL"))
-				count, countErr := redis.Int(c.Do("SCARD", "user", content.From))
+				count, countErr := redis.Int(c.Do("SCARD", "user"))
 				if countErr != nil {
 					_, err = bot.SendText([]string{content.From}, fmt.Sprintf("目前有 %d 人加入自動警訊服務。", count))
 					if err != nil {
