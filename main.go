@@ -242,7 +242,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 							log.Println(err)
 						}
 
-						link := fmt.Sprintf("http://www.facebook.com/%s", fbid)
+						link := fmt.Sprintf("http://www.facebook.com/profile.php?id=%s", fbid)
 						description := fmt.Sprintf("%s %s", data.Name, link)
 						_, err = bot.SendText([]string{content.From}, description)
 						if err != nil {
