@@ -222,9 +222,9 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 				type MeisData struct {
 					ID         string `json:"id"`
 					Name       string `json:"name"`
-					ImgNo      int    `json:"img_no"`
-					Fanpage    int    `json:"fanpage"`
-					Creator    int    `json:"creator"`
+					ImgNo      string `json:"img_no"`
+					Fanpage    string `json:"fanpage"`
+					Creator    string `json:"creator"`
 					UpdateTime string `json:"update_time"`
 				}
 
