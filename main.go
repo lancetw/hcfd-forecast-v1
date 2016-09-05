@@ -248,14 +248,6 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						if err != nil {
 							log.Println(err)
 						}
-						_, sendRichMessageErr := bot.NewMultipleMessage().
-							AddText(data.Name).
-							AddText(link).
-							AddImage(image, image).
-							Send([]string{content.From})
-						if sendRichMessageErr != nil {
-							log.Println(err)
-						}
 						break
 					}
 
