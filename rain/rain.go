@@ -136,9 +136,9 @@ func GetRainingInfo(targets []string, noLevel bool) ([]string, string) {
 							case "MIN_10":
 								if noLevel {
 									if element.Value < 0 {
-										msg = msg + fmt.Sprintf("【%s 豪大雨警報】 %s：%s\n", location.Name, "十分鐘雨量", "-")
+										msg = msg + fmt.Sprintf("【%s】豪大雨警報 %s：%s\n", location.Name, "十分鐘雨量", "-")
 									} else {
-										msg = msg + fmt.Sprintf("【%s 豪大雨警報】 %s：%.2f\n", location.Name, "十分鐘雨量", element.Value)
+										msg = msg + fmt.Sprintf("【%s】豪大雨警報 %s：%.2f", location.Name, "十分鐘雨量", element.Value)
 									}
 								} else {
 									if element.Value < 0 {
@@ -146,7 +146,7 @@ func GetRainingInfo(targets []string, noLevel bool) ([]string, string) {
 									} else {
 										log.Printf("%s：%.2f", "十分鐘雨量", element.Value)
 										if element.Value >= rainLevel["10minutes"] {
-											msg = msg + fmt.Sprintf("【%s 豪大雨警報】 %s：%.2f\n", location.Name, "十分鐘雨量", element.Value)
+											msg = msg + fmt.Sprintf("【%s】豪大雨警報 %s：%.2f", location.Name, "十分鐘雨量", element.Value)
 										}
 									}
 								}
@@ -154,9 +154,9 @@ func GetRainingInfo(targets []string, noLevel bool) ([]string, string) {
 							case "RAIN":
 								if noLevel {
 									if element.Value < 0 {
-										msg = msg + fmt.Sprintf("【%s 豪大雨警報】 %s：%s\n", location.Name, "每小時雨量", "-")
+										msg = msg + fmt.Sprintf("【%s】豪大雨警報\n%s：%s\n", location.Name, "每小時雨量", "-")
 									} else {
-										msg = msg + fmt.Sprintf("【%s 豪大雨警報】 %s：%.2f\n", location.Name, "每小時雨量", element.Value)
+										msg = msg + fmt.Sprintf("【%s】豪大雨警報\n%s：%.2f\n", location.Name, "每小時雨量", element.Value)
 									}
 								} else {
 									if element.Value < 0 {
