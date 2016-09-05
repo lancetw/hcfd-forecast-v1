@@ -19,6 +19,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/garyburd/redigo/redis"
@@ -88,14 +89,16 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				log.Println(err)
 			}
-			switch text.Text {
+			cmd := strings.Fields(text.Text)
+
+			switch cmd[0] {
 			case "加入":
 				c := db.Connect(os.Getenv("REDISTOGO_URL"))
 				status, addErr := c.Do("SADD", "user", content.From)
 				if addErr != nil {
 					log.Println("SADD to redis error", addErr, status)
 				} else {
-					_, err = bot.SendText([]string{content.From}, user.Contacts[0].DisplayName+" 您好，已將您加入傳送對象 ^＿^ ")
+					_, err = bot.SendText([]string{content.From}, user.Contacts[0].DisplayName+" 您好，已將您加入傳送對象，未來將會傳送天氣警報資訊給您 ^＿^ ")
 					if err != nil {
 						log.Println(err)
 					}
@@ -115,6 +118,17 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 				}
 				defer c.Close()
 
+			case "服務":
+				c := db.Connect(os.Getenv("REDISTOGO_URL"))
+				count, countErr := redis.Int(c.Do("SCARD", "user", content.From))
+				if countErr != nil {
+					_, err = bot.SendText([]string{content.From}, fmt.Sprintf("目前有 %d 人加入自動警訊服務。", count))
+					if err != nil {
+						log.Println(err)
+					}
+				}
+				defer c.Close()
+
 			case "狀態":
 				c := db.Connect(os.Getenv("REDISTOGO_URL"))
 				status, getErr := redis.Int(c.Do("SISMEMBER", "user", content.From))
@@ -124,7 +138,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						log.Println(err)
 					}
 				} else {
-					_, err = bot.SendText([]string{content.From}, "已登記完成，未來將會傳送天氣警報資訊給您 :D")
+					_, err = bot.SendText([]string{content.From}, "您已經是傳送對象 :D")
 					if err != nil {
 						log.Println(err)
 					}
@@ -143,7 +157,12 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 				}
 
 			case "雨量":
-				msgs, _ := rain.GetRainingInfo([]string{"新竹市"}, true)
+				target := []string{"新竹市"}
+				if cmd[1] != "" {
+					target = []string{cmd[1]}
+				}
+
+				msgs, _ := rain.GetRainingInfo(target, true)
 				if len(msgs) == 0 {
 					_, err = bot.SendText([]string{content.From}, "目前沒有雨量資訊！")
 					if err != nil {

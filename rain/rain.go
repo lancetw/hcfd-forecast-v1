@@ -233,13 +233,12 @@ func GetWarningInfo(targets []string) ([]string, string) {
 }
 
 func saveHazards(location Location1) string {
-	log.Printf("【%s%s%s】\n %s ~\n %s\n影響地區：", location.Name, location.Hazards.Info.Phenomena, location.Hazards.Info.Significance, location.Hazards.ValidTime.StartTime.Format("01/02 15:04"), location.Hazards.ValidTime.EndTime.Format("01/02 15:04"))
-	m := fmt.Sprintf("【%s%s%s】\n %s ~\n %s\n影響地區：", location.Name, location.Hazards.Info.Phenomena, location.Hazards.Info.Significance, location.Hazards.ValidTime.StartTime.Format("01/02 15:04"), location.Hazards.ValidTime.EndTime.Format("01/02 15:04"))
+	log.Printf("\n【%s】%s%s\n %s ~\n %s\n影響地區：", location.Name, location.Hazards.Info.Phenomena, location.Hazards.Info.Significance, location.Hazards.ValidTime.StartTime.Format("01/02 15:04"), location.Hazards.ValidTime.EndTime.Format("01/02 15:04"))
+	m := fmt.Sprintf("\n【%s】%s%s\n %s ~\n %s\n影響地區：", location.Name, location.Hazards.Info.Phenomena, location.Hazards.Info.Significance, location.Hazards.ValidTime.StartTime.Format("01/02 15:04"), location.Hazards.ValidTime.EndTime.Format("01/02 15:04"))
 	for _, str := range location.Hazards.HazardInfo.AffectedAreas {
 		log.Printf("%s ", str.Name)
 		m = m + fmt.Sprintf("%s ", str.Name)
 	}
-	m = m + "\n"
 
 	return m
 }
