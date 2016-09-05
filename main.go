@@ -126,7 +126,10 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					if err != nil {
 						log.Println(err)
 					}
+				} else {
+					log.Println(countErr)
 				}
+
 				defer c.Close()
 
 			case "狀態":
