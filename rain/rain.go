@@ -235,9 +235,11 @@ func GetWarningInfo(targets []string) ([]string, string) {
 func saveHazards(location Location1) string {
 	var m string
 
-	if location.Name != "" {
-		log.Printf("【%s】%s%s\n %s ~\n %s\n影響地區：", location.Name, location.Hazards.Info.Phenomena, location.Hazards.Info.Significance, location.Hazards.ValidTime.StartTime.Format("01/02 15:04"), location.Hazards.ValidTime.EndTime.Format("01/02 15:04"))
-		m = fmt.Sprintf("【%s】%s%s\n %s ~\n %s\n影響地區：", location.Name, location.Hazards.Info.Phenomena, location.Hazards.Info.Significance, location.Hazards.ValidTime.StartTime.Format("01/02 15:04"), location.Hazards.ValidTime.EndTime.Format("01/02 15:04"))
+	log.Printf("【%s】%s%s\n %s ~\n %s\n", location.Name, location.Hazards.Info.Phenomena, location.Hazards.Info.Significance, location.Hazards.ValidTime.StartTime.Format("01/02 15:04"), location.Hazards.ValidTime.EndTime.Format("01/02 15:04"))
+	m = fmt.Sprintf("【%s】%s%s\n %s ~\n %s\n", location.Name, location.Hazards.Info.Phenomena, location.Hazards.Info.Significance, location.Hazards.ValidTime.StartTime.Format("01/02 15:04"), location.Hazards.ValidTime.EndTime.Format("01/02 15:04"))
+	if len(location.Hazards.HazardInfo.AffectedAreas) > 0 {
+		log.Printf("影響地區：")
+		m = m + "影響地區："
 		for _, str := range location.Hazards.HazardInfo.AffectedAreas {
 			log.Printf("%s ", str.Name)
 			m = m + fmt.Sprintf("%s ", str.Name)
