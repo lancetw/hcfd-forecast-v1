@@ -182,10 +182,18 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 
 			case "警報":
 				msgs, _ := rain.GetWarningInfo(nil)
-				for _, msg := range msgs {
+				if len(msgs) <= 0 {
+					msg := "目前沒有天氣警報資訊！"
 					_, err = bot.SendText([]string{content.From}, msg)
 					if err != nil {
 						log.Println(err)
+					}
+				} else {
+					for _, msg := range msgs {
+						_, err = bot.SendText([]string{content.From}, msg)
+						if err != nil {
+							log.Println(err)
+						}
 					}
 				}
 
