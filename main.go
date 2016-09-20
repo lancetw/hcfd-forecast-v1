@@ -249,13 +249,13 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 				getJSONErr := getJSON("http://beauty.zones.gamebase.com.tw/wall?json", &beauty)
 				if len(beauty.Meis) > 0 {
 					for fbid, data := range beauty.Meis {
-						image := fmt.Sprintf("http://graph.facebook.com/%s/picture?type=large", fbid)
+						image := fmt.Sprintf("https://graph.facebook.com/%s/picture?type=large", fbid)
 						_, err = bot.SendImage([]string{content.From}, image, image)
 						if err != nil {
 							log.Println(err)
 						}
 
-						link := fmt.Sprintf("http://www.facebook.com/profile.php?id=%s", fbid)
+						link := fmt.Sprintf("https://www.facebook.com/profile.php?id=%s", fbid)
 						description := fmt.Sprintf("%s %s", data.Name, link)
 						_, err = bot.SendText([]string{content.From}, description)
 						if err != nil {
