@@ -17,8 +17,6 @@ const timeZone = "Asia/Taipei"
 var bot *linebot.Client
 
 func main() {
-	log.Println("=== 查詢。開始 ===")
-
 	strID := os.Getenv("ChannelID")
 	numID, err := strconv.ParseInt(strID, 10, 64)
 	if err != nil {
@@ -30,6 +28,8 @@ func main() {
 	}
 
 	for {
+		log.Println("=== 查詢。開始 ===")
+
 		c := db.Connect(os.Getenv("REDISTOGO_URL"))
 
 		targets0 := []string{"新竹市"}
