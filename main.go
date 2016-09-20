@@ -26,7 +26,7 @@ import (
 	"github.com/lancetw/hcfd-forecast/db"
 	"github.com/lancetw/hcfd-forecast/rain"
 	"github.com/line/line-bot-sdk-go/linebot"
-	newrelic "github.com/newrelic/go-agent"
+	"github.com/newrelic/go-agent"
 )
 
 const timeZone = "Asia/Taipei"
