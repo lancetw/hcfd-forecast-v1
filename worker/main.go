@@ -17,6 +17,8 @@ const timeZone = "Asia/Taipei"
 var bot *linebot.Client
 
 func main() {
+	log.Println("=== 查詢。開始 ===")
+
 	strID := os.Getenv("ChannelID")
 	numID, err := strconv.ParseInt(strID, 10, 64)
 	if err != nil {
@@ -105,6 +107,8 @@ func main() {
 		}
 
 		defer c.Close()
+
+		log.Println("=== 查詢。結束 ===")
 
 		time.Sleep(30 * time.Second)
 	}
