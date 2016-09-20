@@ -15,6 +15,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -47,11 +48,16 @@ func main() {
 		log.Println("Bot:", bot, " err:", err)
 	}
 
+	http.HandleFunc(newrelic.WrapHandleFunc(app, "/", homeHandler))
 	http.HandleFunc(newrelic.WrapHandleFunc(app, "/callback", callbackHandler))
 
 	port := os.Getenv("PORT")
 	addr := fmt.Sprintf(":%s", port)
 	http.ListenAndServe(addr, nil)
+}
+
+func homeHandler(w http.ResponseWriter, r *http.Request) {
+	io.WriteString(w, "HCFD world")
 }
 
 func callbackHandler(w http.ResponseWriter, r *http.Request) {
