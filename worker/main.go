@@ -72,38 +72,42 @@ func main() {
 		targets1 := []string{"新竹市", "新竹縣"}
 		msgs1, token1 := rain.GetWarningInfo(targets1)
 
-		status1, getErr := redis.Int(c.Do("SISMEMBER", "token1", token1))
-		if getErr != nil {
-			if err != nil {
-				log.Println(err)
-			}
-		}
-
-		if status1 == 0 {
-			users1, smembersErr := redis.Strings(c.Do("SMEMBERS", "user"))
-
-			if smembersErr != nil {
-				log.Println("GetWarningInfo SMEMBERS redis error", smembersErr)
-			} else {
-				local := time.Now()
-				location, err := time.LoadLocation(timeZone)
-				if err == nil {
-					local = local.In(location)
+		if token1 != "" {
+			status1, getErr := redis.Int(c.Do("SISMEMBER", "token1", token1))
+			if getErr != nil {
+				if err != nil {
+					log.Println(err)
 				}
-				for _, contentTo := range users1 {
-					for _, msg := range msgs1 {
-						_, err = bot.SendText([]string{contentTo}, msg)
-						if err != nil {
-							log.Println(err)
+			}
+
+			if status1 == 0 {
+				users1, smembersErr := redis.Strings(c.Do("SMEMBERS", "user"))
+
+				if smembersErr != nil {
+					log.Println("GetWarningInfo SMEMBERS redis error", smembersErr)
+				} else {
+					local := time.Now()
+					location, locationErr := time.LoadLocation(timeZone)
+					if locationErr == nil {
+						local = local.In(location)
+					}
+					for _, contentTo := range users1 {
+						for _, msg := range msgs1 {
+							_, msgErr := bot.SendText([]string{contentTo}, msg)
+							if msgErr != nil {
+								log.Println(err)
+							}
 						}
 					}
 				}
 			}
 		}
 
-		n, addErr := c.Do("SADD", "token1", token1)
-		if addErr != nil {
-			log.Println("GetWarningInfo SADD to redis error", addErr, n)
+		if token1 != "" {
+			n, addErr := c.Do("SADD", "token1", token1)
+			if addErr != nil {
+				log.Println("GetWarningInfo SADD to redis error", addErr, n)
+			}
 		}
 
 		defer c.Close()
