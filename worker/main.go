@@ -46,7 +46,7 @@ func main() {
 			users0, smembersErr := redis.Strings(c.Do("SMEMBERS", "user"))
 
 			if smembersErr != nil {
-				log.Println("SMEMBERS redis error", smembersErr)
+				log.Println("GetRainingInfo SMEMBERS redis error", smembersErr)
 			} else {
 				local := time.Now()
 				location, timeZoneErr := time.LoadLocation(timeZone)
@@ -66,7 +66,7 @@ func main() {
 
 		n0, addErr := c.Do("SADD", "token0", token0)
 		if addErr != nil {
-			log.Println("SADD to redis error", addErr, n0)
+			log.Println("GetRainingInfo SADD to redis error", addErr, n0)
 		}
 
 		targets1 := []string{"新竹市", "新竹縣"}
@@ -83,7 +83,7 @@ func main() {
 			users1, smembersErr := redis.Strings(c.Do("SMEMBERS", "user"))
 
 			if smembersErr != nil {
-				log.Println("SMEMBERS redis error", smembersErr)
+				log.Println("GetWarningInfo SMEMBERS redis error", smembersErr)
 			} else {
 				local := time.Now()
 				location, err := time.LoadLocation(timeZone)
@@ -103,7 +103,7 @@ func main() {
 
 		n, addErr := c.Do("SADD", "token1", token1)
 		if addErr != nil {
-			log.Println("SADD to redis error", addErr, n)
+			log.Println("GetWarningInfo SADD to redis error", addErr, n)
 		}
 
 		defer c.Close()
