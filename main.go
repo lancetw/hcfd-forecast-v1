@@ -179,11 +179,13 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						log.Println(err)
 					}
 				} else {
+					var text string
 					for _, msg := range msgs {
-						_, err = bot.SendText([]string{content.From}, msg)
-						if err != nil {
-							log.Println(err)
-						}
+						text = text + msg + "\n"
+					}
+					_, err = bot.SendText([]string{content.From}, text)
+					if err != nil {
+						log.Println(err)
 					}
 				}
 
