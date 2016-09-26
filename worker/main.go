@@ -110,6 +110,6 @@ func main() {
 
 		log.Println("=== 查詢。結束 ===")
 
-		time.Sleep(30 * time.Second)
+		time.Sleep(60 * time.Second)
 	}
 }
