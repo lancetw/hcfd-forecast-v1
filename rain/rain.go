@@ -97,7 +97,7 @@ func fetchXML(url string) []byte {
 	resp.Body.Close()
 	if err != nil {
 		fmt.Printf("fetchXML ioutil.ReadAll error: %v", err)
-		os.Exit(1)
+		return nil
 	}
 
 	return xmldata
