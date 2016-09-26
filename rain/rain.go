@@ -89,14 +89,14 @@ const timeZone = "Asia/Taipei"
 func fetchXML(url string) []byte {
 	resp, err := http.Get(url)
 	if err != nil {
-		fmt.Printf("error: %v", err)
+		fmt.Printf("fetchXML http.Get error: %v", err)
 		os.Exit(1)
 	}
 
 	xmldata, err := ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
 	if err != nil {
-		fmt.Printf("error: %v", err)
+		fmt.Printf("fetchXML ioutil.ReadAll error: %v", err)
 		os.Exit(1)
 	}
 
@@ -119,7 +119,7 @@ func GetRainingInfo(targets []string, noLevel bool) ([]string, string) {
 	v := ResultRaining{}
 	err := xml.Unmarshal([]byte(xmldata), &v)
 	if err != nil {
-		log.Printf("error: %v", err)
+		log.Printf("GetRainingInfo fetchXML error: %v", err)
 		return []string{}, ""
 	}
 
@@ -198,7 +198,7 @@ func GetWarningInfo(targets []string) ([]string, string) {
 	v := ResultWarning{}
 	err := xml.Unmarshal([]byte(xmldata), &v)
 	if err != nil {
-		log.Printf("error: %v", err)
+		log.Printf("GetWarningInfo fetchXML error: %v", err)
 		return []string{}, ""
 	}
 
