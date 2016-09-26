@@ -27,7 +27,6 @@ import (
 	"github.com/lancetw/hcfd-forecast/db"
 	"github.com/lancetw/hcfd-forecast/rain"
 	"github.com/line/line-bot-sdk-go/linebot"
-	"github.com/newrelic/go-agent"
 )
 
 const timeZone = "Asia/Taipei"
@@ -35,9 +34,6 @@ const timeZone = "Asia/Taipei"
 var bot *linebot.Client
 
 func main() {
-	config := newrelic.NewConfig("hcfd-forecast", "99e64c65dd2b25a7eecd35b5bfe636b5b992c9bc")
-	app, err := newrelic.NewApplication(config)
-
 	strID := os.Getenv("ChannelID")
 	numID, err := strconv.ParseInt(strID, 10, 64)
 	if err != nil {
@@ -48,8 +44,8 @@ func main() {
 		log.Println("Bot:", bot, " err:", err)
 	}
 
-	http.HandleFunc(newrelic.WrapHandleFunc(app, "/", homeHandler))
-	http.HandleFunc(newrelic.WrapHandleFunc(app, "/callback", callbackHandler))
+	http.HandleFunc("/", homeHandler)
+	http.HandleFunc("/callback", callbackHandler)
 
 	port := os.Getenv("PORT")
 	addr := fmt.Sprintf(":%s", port)
