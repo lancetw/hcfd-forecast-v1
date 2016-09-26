@@ -34,39 +34,41 @@ func main() {
 
 		targets0 := []string{"新竹市"}
 		msgs0, token0 := rain.GetRainingInfo(targets0, false)
-
-		status0, getErr := redis.Int(c.Do("SISMEMBER", "token0", token0))
-		if getErr != nil {
-			if err != nil {
-				log.Println(err)
-			}
-		}
-
-		if status0 == 0 {
-			users0, smembersErr := redis.Strings(c.Do("SMEMBERS", "user"))
-
-			if smembersErr != nil {
-				log.Println("GetRainingInfo SMEMBERS redis error", smembersErr)
-			} else {
-				local := time.Now()
-				location, timeZoneErr := time.LoadLocation(timeZone)
-				if timeZoneErr == nil {
-					local = local.In(location)
+		
+		if token != "" {
+			status0, getErr := redis.Int(c.Do("SISMEMBER", "token0", token0))
+			if getErr != nil {
+				if err != nil {
+					log.Println(err)
 				}
-				for _, contentTo := range users0 {
-					for _, msg := range msgs0 {
-						_, err = bot.SendText([]string{contentTo}, msg)
-						if err != nil {
-							log.Println(err)
+			}
+
+			if status0 == 0 {
+				users0, smembersErr := redis.Strings(c.Do("SMEMBERS", "user"))
+
+				if smembersErr != nil {
+					log.Println("GetRainingInfo SMEMBERS redis error", smembersErr)
+				} else {
+					local := time.Now()
+					location, timeZoneErr := time.LoadLocation(timeZone)
+					if timeZoneErr == nil {
+						local = local.In(location)
+					}
+					for _, contentTo := range users0 {
+						for _, msg := range msgs0 {
+							_, err = bot.SendText([]string{contentTo}, msg)
+							if err != nil {
+								log.Println(err)
+							}
 						}
 					}
 				}
 			}
-		}
 
-		n0, addErr := c.Do("SADD", "token0", token0)
-		if addErr != nil {
-			log.Println("GetRainingInfo SADD to redis error", addErr, n0)
+			n0, addErr := c.Do("SADD", "token0", token0)
+			if addErr != nil {
+				log.Println("GetRainingInfo SADD to redis error", addErr, n0)
+			}
 		}
 
 		targets1 := []string{"新竹市", "新竹縣"}
