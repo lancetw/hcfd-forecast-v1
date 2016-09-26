@@ -1,2 +1,2 @@
-web: sh hcfd-forecast
-worker: sh worker
+web: sh hcfd-forecast/hcfd-forecast
+worker: sh hcfd-forecast/worker/worker
