@@ -49,6 +49,11 @@
 			"ImportPath": "github.com/newrelic/go-agent/internal/utilization",
 			"Comment": "v1.1.0",
 			"Rev": "a923caa59930cbb1b27d2a9fb2d5663d9e5c637c"
+		},
+		{
+			"ImportPath": "github.com/robfig/cron",
+			"Comment": "v1-36-gab4c16f",
+			"Rev": "ab4c16f3a09641bd19d65f55b3d8d6edda7a8e05"
 		}
 	]
 }

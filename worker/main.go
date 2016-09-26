@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -10,6 +11,7 @@ import (
 	"github.com/lancetw/hcfd-forecast/db"
 	"github.com/lancetw/hcfd-forecast/rain"
 	"github.com/line/line-bot-sdk-go/linebot"
+	"github.com/robfig/cron"
 )
 
 const timeZone = "Asia/Taipei"
@@ -17,6 +19,18 @@ const timeZone = "Asia/Taipei"
 var bot *linebot.Client
 
 func main() {
+	c := cron.New()
+	c.AddFunc("0 */1 * * * *", GoProcess)
+	c.Start()
+
+	for {
+		time.Sleep(10000000000000)
+		fmt.Println("sleep")
+	}
+}
+
+// GoProcess is main process
+func GoProcess() {
 	strID := os.Getenv("ChannelID")
 	numID, err := strconv.ParseInt(strID, 10, 64)
 	if err != nil {
