@@ -72,7 +72,7 @@ func GoProcess() {
 					if len(msgs0) > 0 {
 						var text string
 						for _, msg := range msgs0 {
-							text = text + msg + "\n"
+							text = text + msg + "\n\n"
 						}
 						for _, contentTo := range users0 {
 							_, err = bot.SendText([]string{contentTo}, text)
