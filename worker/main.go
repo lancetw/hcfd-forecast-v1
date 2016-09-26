@@ -35,7 +35,7 @@ func main() {
 		targets0 := []string{"新竹市"}
 		msgs0, token0 := rain.GetRainingInfo(targets0, false)
 		
-		if token != "" {
+		if token0 != "" {
 			status0, getErr := redis.Int(c.Do("SISMEMBER", "token0", token0))
 			if getErr != nil {
 				if err != nil {
