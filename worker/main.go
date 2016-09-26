@@ -52,7 +52,7 @@ func GoProcess() {
 		if token0 != "" {
 			status0, getErr := redis.Int(c.Do("SISMEMBER", "token0", token0))
 			if getErr != nil {
-				log.Println(err)
+				log.Println(getErr)
 			}
 
 			if status0 == 0 {
