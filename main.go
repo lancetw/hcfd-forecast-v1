@@ -179,8 +179,8 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						log.Println(err)
 					}
 				} else {
-					var text string
 					if len(msgs) > 0 {
+						var text string
 						for _, msg := range msgs {
 							text = text + msg + "\n"
 						}
