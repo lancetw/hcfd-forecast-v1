@@ -69,14 +69,16 @@ func GoProcess() {
 						local = local.In(location)
 					}
 
-					var text string
-					for _, msg := range msgs0 {
-						text = text + msg + "\n"
-					}
-					for _, contentTo := range users0 {
-						_, err = bot.SendText([]string{contentTo}, text)
-						if err != nil {
-							log.Println(err)
+					if len(msgs0) > 0 {
+						var text string
+						for _, msg := range msgs0 {
+							text = text + msg + "\n"
+						}
+						for _, contentTo := range users0 {
+							_, err = bot.SendText([]string{contentTo}, text)
+							if err != nil {
+								log.Println(err)
+							}
 						}
 					}
 				}
