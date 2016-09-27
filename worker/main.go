@@ -130,7 +130,5 @@ func GoProcess() {
 		defer c.Close()
 
 		log.Println("=== 查詢。結束 ===")
-
-		time.Sleep(60 * time.Second)
 	}
 }
