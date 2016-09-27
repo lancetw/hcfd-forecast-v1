@@ -41,7 +41,7 @@ func GoProcess() {
 		log.Println("Bot:", bot, " err:", err)
 	}
 
-	log.Println("=== 查詢。開始 ===")
+	log.Println("=== 查詢開始 === [")
 
 	c := db.Connect(os.Getenv("REDISTOGO_URL"))
 
@@ -128,5 +128,5 @@ func GoProcess() {
 
 	defer c.Close()
 
-	log.Println("=== 查詢。結束 ===")
+	log.Println("=== 查詢結束 === ]")
 }
