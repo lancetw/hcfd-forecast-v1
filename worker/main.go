@@ -20,7 +20,7 @@ var bot *linebot.Client
 
 func main() {
 	c := cron.New()
-	c.AddFunc("0 */2 * * * *", GoProcess)
+	c.AddFunc("0 */1 * * * *", GoProcess)
 	c.Start()
 
 	for {
@@ -41,7 +41,7 @@ func GoProcess() {
 		log.Println("Bot:", bot, " err:", err)
 	}
 
-	log.Println("=== 查詢開始 === [")
+	log.Println("$ 查詢開始 $ [")
 
 	c := db.Connect(os.Getenv("REDISTOGO_URL"))
 
@@ -128,5 +128,5 @@ func GoProcess() {
 
 	defer c.Close()
 
-	log.Println("=== 查詢結束 === ]")
+	log.Println("$ 查詢結束 $ ]")
 }
