@@ -49,7 +49,7 @@ func GoProcess() {
 		targets0 := []string{"新竹市"}
 		msgs0, token0 := rain.GetRainingInfo(targets0, false)
 
-		if token0 != "" {
+		if token0 != nil && token0 != "" {
 			status0, getErr := redis.Int(c.Do("SISMEMBER", "token0", token0))
 			if getErr != nil {
 				log.Println(getErr)
@@ -91,7 +91,7 @@ func GoProcess() {
 		targets1 := []string{"新竹市", "新竹縣"}
 		msgs1, token1 := rain.GetWarningInfo(targets1)
 
-		if token1 != "" {
+		if token1 != nil && token1 != "" {
 			status1, getErr := redis.Int(c.Do("SISMEMBER", "token1", token1))
 			if getErr != nil {
 				log.Println(getErr)
