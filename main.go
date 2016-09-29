@@ -182,7 +182,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					if len(msgs) > 0 {
 						var text string
 						for _, msg := range msgs {
-							text = text + msg
+							text = text + msg + "\n\n"
 						}
 						text = strings.Trim(text, " ")
 						_, err = bot.SendText([]string{content.From}, text)
@@ -204,7 +204,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					if len(msgs) > 0 {
 						var text string
 						for _, msg := range msgs {
-							text = text + msg
+							text = text + msg + "\n\n"
 						}
 						text = strings.Trim(text, " ")
 						_, err = bot.SendText([]string{content.From}, text)
