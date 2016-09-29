@@ -69,7 +69,7 @@ func GoProcess() {
 				if len(msgs0) > 0 {
 					var text string
 					for _, msg := range msgs0 {
-						text = text + msg + "\n\n"
+						text = text + msg
 					}
 					log.Println(text)
 					for _, contentTo := range users0 {
@@ -112,7 +112,7 @@ func GoProcess() {
 				if len(msgs1) > 0 {
 					var text string
 					for _, msg := range msgs1 {
-						text = text + msg + "\n\n"
+						text = text + msg
 					}
 					log.Println(text)
 					for _, contentTo := range users1 {
