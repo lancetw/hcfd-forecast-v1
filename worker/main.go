@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/garyburd/redigo/redis"
@@ -71,6 +72,7 @@ func GoProcess() {
 					for _, msg := range msgs0 {
 						text = text + msg
 					}
+					text = strings.Trim(text, " ")
 					log.Println(text)
 					for _, contentTo := range users0 {
 						_, err = bot.SendText([]string{contentTo}, text)
@@ -114,6 +116,7 @@ func GoProcess() {
 					for _, msg := range msgs1 {
 						text = text + msg
 					}
+					text = strings.Trim(text, " ")
 					log.Println(text)
 					for _, contentTo := range users1 {
 						_, msgErr := bot.SendText([]string{contentTo}, text)
