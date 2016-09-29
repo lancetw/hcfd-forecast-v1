@@ -42,7 +42,7 @@ func GoProcess() {
 	}
 
 	for {
-		log.Println("=== 查詢。開始 ===")
+		//log.Println("=== 查詢。開始 ===")
 
 		c := db.Connect(os.Getenv("REDISTOGO_URL"))
 
@@ -72,6 +72,7 @@ func GoProcess() {
 						for _, msg := range msgs0 {
 							text = text + msg + "\n\n"
 						}
+						log.Println(text)
 						for _, contentTo := range users0 {
 							_, err = bot.SendText([]string{contentTo}, text)
 							if err != nil {
@@ -108,9 +109,15 @@ func GoProcess() {
 					if locationErr == nil {
 						local = local.In(location)
 					}
-					for _, contentTo := range users1 {
+
+					if len(msgs1) > 0 {
+						var text string
 						for _, msg := range msgs1 {
-							_, msgErr := bot.SendText([]string{contentTo}, msg)
+							text = text + msg + "\n\n"
+						}
+						log.Println(text)
+						for _, contentTo := range users1 {
+							_, msgErr := bot.SendText([]string{contentTo}, text)
 							if msgErr != nil {
 								log.Println(err)
 							}
@@ -129,7 +136,7 @@ func GoProcess() {
 
 		defer c.Close()
 
-		log.Println("=== 查詢。結束 ===")
+		//log.Println("=== 查詢。結束 ===")
 
 		time.Sleep(60 * time.Second)
 	}
