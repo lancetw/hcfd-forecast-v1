@@ -138,9 +138,9 @@ func GetRainingInfo(targets []string, noLevel bool) ([]string, string) {
 							case "MIN_10":
 								if noLevel {
 									if element.Value <= 0 {
-										msg = msg + fmt.Sprintf("%s：%s", "*10分鐘雨量*", "-")
+										msg = msg + fmt.Sprintf("%s：%s", "$ 10分鐘雨量 $", "-")
 									} else {
-										msg = msg + fmt.Sprintf("%s：%.1f", "*10分鐘雨量*", element.Value)
+										msg = msg + fmt.Sprintf("%s：%.1f", "$ 10分鐘雨量 $", element.Value)
 									}
 								} else {
 									if element.Value <= 0 {
@@ -148,7 +148,7 @@ func GetRainingInfo(targets []string, noLevel bool) ([]string, string) {
 									} else {
 										//log.Printf("%s：%.1f", "*10分鐘雨量*", element.Value)
 										if element.Value >= rainLevel["10minutes"] {
-											msg = msg + fmt.Sprintf("【%s】*豪大雨警報*\n%s：%.1f \n", location.Name, "10分鐘雨量", element.Value)
+											msg = msg + fmt.Sprintf("【%s】$ 豪大雨警報 $\n%s：%.1f \n", location.Name, "10分鐘雨量", element.Value)
 										}
 									}
 								}
@@ -156,9 +156,9 @@ func GetRainingInfo(targets []string, noLevel bool) ([]string, string) {
 							case "RAIN":
 								if noLevel {
 									if element.Value <= 0 {
-										msg = msg + fmt.Sprintf("【%s】\n%s：%s\n", location.Name, "時雨量", "-")
+										msg = msg + fmt.Sprintf("【%s】\n%s：%s\n", location.Name, "(時雨量)", "-")
 									} else {
-										msg = msg + fmt.Sprintf("【%s】\n%s：%.1f\n", location.Name, "時雨量", element.Value)
+										msg = msg + fmt.Sprintf("【%s】\n%s：%.1f\n", location.Name, "(時雨量)", element.Value)
 									}
 								} else {
 									if element.Value <= 0 {
@@ -168,7 +168,7 @@ func GetRainingInfo(targets []string, noLevel bool) ([]string, string) {
 										//log.Printf("[%s]", location.Name)
 										//log.Printf("%s：%.1f", "時雨量", element.Value)
 										if element.Value >= rainLevel["1hour"] {
-											msg = msg + fmt.Sprintf("【%s】*豪大雨警報*\n%s：%.1f \n", location.Name, "時雨量", element.Value)
+											msg = msg + fmt.Sprintf("【%s】$ 豪大雨警報 $\n%s：%.1f \n", location.Name, "時雨量", element.Value)
 										}
 									}
 								}
