@@ -41,103 +41,99 @@ func GoProcess() {
 		log.Println("Bot:", bot, " err:", err)
 	}
 
-	for {
-		//log.Println("=== 查詢。開始 ===")
+	log.Println("{$")
 
-		c := db.Connect(os.Getenv("REDISTOGO_URL"))
+	c := db.Connect(os.Getenv("REDISTOGO_URL"))
 
-		targets0 := []string{"新竹市"}
-		msgs0, token0 := rain.GetRainingInfo(targets0, false)
+	targets0 := []string{"新竹市"}
+	msgs0, token0 := rain.GetRainingInfo(targets0, false)
 
-		if token0 != "" {
-			status0, getErr := redis.Int(c.Do("SISMEMBER", "token0", token0))
-			if getErr != nil {
-				log.Println(getErr)
-			}
-
-			if status0 == 0 {
-				users0, smembersErr := redis.Strings(c.Do("SMEMBERS", "user"))
-
-				if smembersErr != nil {
-					log.Println("GetRainingInfo SMEMBERS redis error", smembersErr)
-				} else {
-					local := time.Now()
-					location, timeZoneErr := time.LoadLocation(timeZone)
-					if timeZoneErr == nil {
-						local = local.In(location)
-					}
-
-					if len(msgs0) > 0 {
-						var text string
-						for _, msg := range msgs0 {
-							text = text + msg + "\n\n"
-						}
-						log.Println(text)
-						for _, contentTo := range users0 {
-							_, err = bot.SendText([]string{contentTo}, text)
-							if err != nil {
-								log.Println(err)
-							}
-						}
-					}
-				}
-			}
-
-			n0, addErr := c.Do("SADD", "token0", token0)
-			if addErr != nil {
-				log.Println("GetRainingInfo SADD to redis error", addErr, n0)
-			}
+	if token0 != "" {
+		status0, getErr := redis.Int(c.Do("SISMEMBER", "token0", token0))
+		if getErr != nil {
+			log.Println(getErr)
 		}
 
-		targets1 := []string{"新竹市", "新竹縣"}
-		msgs1, token1 := rain.GetWarningInfo(targets1)
+		if status0 == 0 {
+			users0, smembersErr := redis.Strings(c.Do("SMEMBERS", "user"))
 
-		if token1 != "" {
-			status1, getErr := redis.Int(c.Do("SISMEMBER", "token1", token1))
-			if getErr != nil {
-				log.Println(getErr)
-			}
+			if smembersErr != nil {
+				log.Println("GetRainingInfo SMEMBERS redis error", smembersErr)
+			} else {
+				local := time.Now()
+				location, timeZoneErr := time.LoadLocation(timeZone)
+				if timeZoneErr == nil {
+					local = local.In(location)
+				}
 
-			if status1 == 0 {
-				users1, smembersErr := redis.Strings(c.Do("SMEMBERS", "user"))
-
-				if smembersErr != nil {
-					log.Println("GetWarningInfo SMEMBERS redis error", smembersErr)
-				} else {
-					local := time.Now()
-					location, locationErr := time.LoadLocation(timeZone)
-					if locationErr == nil {
-						local = local.In(location)
+				if len(msgs0) > 0 {
+					var text string
+					for _, msg := range msgs0 {
+						text = text + msg + "\n\n"
 					}
-
-					if len(msgs1) > 0 {
-						var text string
-						for _, msg := range msgs1 {
-							text = text + msg + "\n\n"
-						}
-						log.Println(text)
-						for _, contentTo := range users1 {
-							_, msgErr := bot.SendText([]string{contentTo}, text)
-							if msgErr != nil {
-								log.Println(err)
-							}
+					log.Println(text)
+					for _, contentTo := range users0 {
+						_, err = bot.SendText([]string{contentTo}, text)
+						if err != nil {
+							log.Println(err)
 						}
 					}
 				}
 			}
 		}
 
-		if token1 != "" {
-			n, addErr := c.Do("SADD", "token1", token1)
-			if addErr != nil {
-				log.Println("GetWarningInfo SADD to redis error", addErr, n)
-			}
+		n0, addErr := c.Do("SADD", "token0", token0)
+		if addErr != nil {
+			log.Println("GetRainingInfo SADD to redis error", addErr, n0)
 		}
-
-		defer c.Close()
-
-		//log.Println("=== 查詢。結束 ===")
-
-		time.Sleep(60 * time.Second)
 	}
+
+	targets1 := []string{"新竹市", "新竹縣"}
+	msgs1, token1 := rain.GetWarningInfo(targets1)
+
+	if token1 != "" {
+		status1, getErr := redis.Int(c.Do("SISMEMBER", "token1", token1))
+		if getErr != nil {
+			log.Println(getErr)
+		}
+
+		if status1 == 0 {
+			users1, smembersErr := redis.Strings(c.Do("SMEMBERS", "user"))
+
+			if smembersErr != nil {
+				log.Println("GetWarningInfo SMEMBERS redis error", smembersErr)
+			} else {
+				local := time.Now()
+				location, locationErr := time.LoadLocation(timeZone)
+				if locationErr == nil {
+					local = local.In(location)
+				}
+
+				if len(msgs1) > 0 {
+					var text string
+					for _, msg := range msgs1 {
+						text = text + msg + "\n\n"
+					}
+					log.Println(text)
+					for _, contentTo := range users1 {
+						_, msgErr := bot.SendText([]string{contentTo}, text)
+						if msgErr != nil {
+							log.Println(err)
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if token1 != "" {
+		n, addErr := c.Do("SADD", "token1", token1)
+		if addErr != nil {
+			log.Println("GetWarningInfo SADD to redis error", addErr, n)
+		}
+	}
+
+	defer c.Close()
+
+	log.Println("$}")
 }
