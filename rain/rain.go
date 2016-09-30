@@ -123,7 +123,7 @@ func GetRainingInfo(targets []string, noLevel bool) ([]string, string) {
 		return []string{}, ""
 	}
 
-	log.Printf("[雨量資訊正常連線，已取得 %d 筆地區資料]\n", len(v.Location))
+	log.Printf("[取得 %d 筆地區雨量資料]\n", len(v.Location))
 
 	for _, location := range v.Location {
 		var msg string
@@ -202,7 +202,7 @@ func GetWarningInfo(targets []string) ([]string, string) {
 		return []string{}, ""
 	}
 
-	log.Printf("[天氣警報資訊正常連線，已取得 %d 筆地區資料]\n", len(v.Location))
+	log.Printf("[取得 %d 筆地區天氣警報資料]\n", len(v.Location))
 
 	local := time.Now()
 	location, err := time.LoadLocation(timeZone)
