@@ -21,7 +21,7 @@ var bot *linebot.Client
 
 func main() {
 	c := cron.New()
-	c.AddFunc("0 */3 * * * *", GoProcess)
+	c.AddFunc("0 */1 * * * *", GoProcess)
 	c.Start()
 
 	for {
