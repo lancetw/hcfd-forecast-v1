@@ -105,7 +105,7 @@ func fetchXML(url string) []byte {
 
 // GetRainingInfo "雨量警示"
 func GetRainingInfo(targets []string, noLevel bool) ([]string, string) {
-	var token = ""
+	var token = "O-A0002-001 "
 	var msgs = []string{}
 
 	rainLevel := map[string]float32{
@@ -189,7 +189,7 @@ func GetRainingInfo(targets []string, noLevel bool) ([]string, string) {
 
 // GetWarningInfo "豪大雨特報"
 func GetWarningInfo(targets []string) ([]string, string) {
-	var token = ""
+	var token = "W-C0033-001 "
 	var msgs = []string{}
 
 	url := baseURL + "W-C0033-001" + "&authorizationkey=" + authKey
