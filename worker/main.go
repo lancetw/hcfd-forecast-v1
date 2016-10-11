@@ -72,10 +72,10 @@ func GoProcess() {
 					for _, msg := range msgs0 {
 						text = text + msg + "\n\n"
 					}
-					var contentText = strings.Trim(text, " ")
+					text = strings.TrimSpace(text)
 					log.Println(text)
 					for _, contentTo := range users0 {
-						_, err = bot.SendText([]string{contentTo}, contentText)
+						_, err = bot.SendText([]string{contentTo}, text)
 						if err != nil {
 							log.Println(err)
 						}
@@ -116,10 +116,10 @@ func GoProcess() {
 					for _, msg := range msgs1 {
 						text = text + msg + "\n\n"
 					}
-					var contentText = strings.Trim(text, " ")
+					text = strings.TrimSpace(text)
 					log.Println(text)
 					for _, contentTo := range users1 {
-						_, msgErr := bot.SendText([]string{contentTo}, contentText)
+						_, msgErr := bot.SendText([]string{contentTo}, text)
 						if msgErr != nil {
 							log.Println(err)
 						}

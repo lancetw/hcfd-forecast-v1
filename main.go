@@ -184,7 +184,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						for _, msg := range msgs {
 							text = text + msg + "\n\n"
 						}
-						text = strings.Trim(text, " ")
+						text = strings.TrimSpace(text)
 						_, err = bot.SendText([]string{content.From}, text)
 						if err != nil {
 							log.Println(err)
@@ -206,7 +206,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						for _, msg := range msgs {
 							text = text + msg + "\n\n"
 						}
-						text = strings.Trim(text, " ")
+						text = strings.TrimSpace(text)
 						_, err = bot.SendText([]string{content.From}, text)
 						if err != nil {
 							log.Println(err)
