@@ -67,12 +67,15 @@ func GoProcess() {
 					local = local.In(location)
 				}
 
+				now := local.Format("15:04:05")
+
 				if len(msgs0) > 0 {
 					var text string
 					for _, msg := range msgs0 {
 						text = text + msg + "\n\n"
 					}
 					text = strings.TrimSpace(text)
+					text = text + "\n\n" + now
 					log.Println(text)
 					for _, contentTo := range users0 {
 						_, err = bot.SendText([]string{contentTo}, text)
@@ -111,12 +114,15 @@ func GoProcess() {
 					local = local.In(location)
 				}
 
+				now := local.Format("15:04:05")
+
 				if len(msgs1) > 0 {
 					var text string
 					for _, msg := range msgs1 {
 						text = text + msg + "\n\n"
 					}
 					text = strings.TrimSpace(text)
+					text = text + "\n\n" + now
 					log.Println(text)
 					for _, contentTo := range users1 {
 						_, msgErr := bot.SendText([]string{contentTo}, text)

@@ -173,6 +173,14 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 				}
 
 				msgs, _ := rain.GetRainingInfo(target, true)
+
+				local := time.Now()
+				location, timezoneErr := time.LoadLocation(timeZone)
+				if timezoneErr == nil {
+					local = local.In(location)
+				}
+				now := local.Format("15:04:05")
+
 				if len(msgs) == 0 {
 					_, err = bot.SendText([]string{content.From}, "目前沒有雨量資訊！")
 					if err != nil {
@@ -185,6 +193,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 							text = text + msg + "\n\n"
 						}
 						text = strings.TrimSpace(text)
+						text = text + "\n\n" + now
 						_, err = bot.SendText([]string{content.From}, text)
 						if err != nil {
 							log.Println(err)
@@ -194,6 +203,14 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 
 			case "警報":
 				msgs, _ := rain.GetWarningInfo(nil)
+
+				local := time.Now()
+				location, timezoneErr := time.LoadLocation(timeZone)
+				if timezoneErr == nil {
+					local = local.In(location)
+				}
+				now := local.Format("15:04:05")
+
 				if len(msgs) <= 0 {
 					msg := "目前沒有天氣警報資訊！"
 					_, err = bot.SendText([]string{content.From}, msg)
@@ -207,6 +224,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 							text = text + msg + "\n\n"
 						}
 						text = strings.TrimSpace(text)
+						text = text + "\n\n" + now
 						_, err = bot.SendText([]string{content.From}, text)
 						if err != nil {
 							log.Println(err)
