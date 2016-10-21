@@ -90,7 +90,7 @@ func GoProcess() {
 		}
 	}
 
-	targets1 := []string{"新竹市", "新竹縣"}
+	targets1 := []string{"新竹市", "新竹縣", "宜蘭縣"}
 	msgs1, token1 := rain.GetWarningInfo(targets1)
 
 	if token1 != "" {
