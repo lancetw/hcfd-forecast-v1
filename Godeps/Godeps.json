@@ -1,5 +1,5 @@
 {
-	"ImportPath": "github.com/lancetw/hcfd-forecast",
+	"ImportPath": "github.com/lancetw/hcfd-forecast-v1",
 	"GoVersion": "go1.7",
 	"GodepVersion": "v74",
 	"Packages": [
