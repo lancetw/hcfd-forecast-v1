@@ -256,12 +256,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						}
 
 					case "貓圖":
-						type Cat struct {
-							File string `json:"file"`
-						}
-						cat := new(Cat)
-						getJSON("http://random.cat/meow", &cat)
-						image := cat.File
+						image := "https://thecatapi.com/api/images/get?format=src&type=gif"
 						if image != "" {
 							if _, replyErr := bot.ReplyMessage(
 								replyToken,
