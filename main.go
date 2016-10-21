@@ -92,7 +92,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 				switch cmd[0] {
 				case "加入":
 					c := db.Connect(os.Getenv("REDISTOGO_URL"))
-					status, addErr := c.Do("SADD", "user", replyToken)
+					status, addErr := c.Do("SADD", "user", event.Source.UserID)
 					defer c.Close()
 					if addErr != nil {
 						log.Println("SADD to redis error", addErr, status)
@@ -106,7 +106,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					}
 				case "退出":
 					c := db.Connect(os.Getenv("REDISTOGO_URL"))
-					status, setErr := c.Do("SREM", "user", replyToken)
+					status, setErr := c.Do("SREM", "user", event.Source.UserID)
 					defer c.Close()
 
 					if setErr != nil {
@@ -136,7 +136,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					}
 				case "狀態":
 					c := db.Connect(os.Getenv("REDISTOGO_URL"))
-					status, getErr := redis.Int(c.Do("SISMEMBER", "user", replyToken))
+					status, getErr := redis.Int(c.Do("SISMEMBER", "user", event.Source.UserID))
 
 					var text string
 					if getErr != nil || status == 0 {

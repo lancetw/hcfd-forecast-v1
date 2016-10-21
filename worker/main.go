@@ -73,11 +73,11 @@ func GoProcess() {
 					text = strings.TrimSpace(text)
 					text = text + "\n\n" + now
 					log.Println(text)
-					for _, replyToken := range users0 {
-						if _, replyErr := bot.ReplyMessage(
-							replyToken,
-							linebot.NewTextMessage(text)).Do(); replyErr != nil {
-							log.Println(replyErr)
+					for _, userID := range users0 {
+						if _, pushErr := bot.PushMessage(
+							userID,
+							linebot.NewTextMessage(text)).Do(); pushErr != nil {
+							log.Println(pushErr)
 						}
 					}
 				}
@@ -121,11 +121,11 @@ func GoProcess() {
 					text = strings.TrimSpace(text)
 					text = text + "\n\n" + now
 					log.Println(text)
-					for _, replyToken := range users1 {
-						if _, replyErr := bot.ReplyMessage(
-							replyToken,
-							linebot.NewTextMessage(text)).Do(); replyErr != nil {
-							log.Println(replyErr)
+					for _, userID := range users1 {
+						if _, pushErr := bot.PushMessage(
+							userID,
+							linebot.NewTextMessage(text)).Do(); pushErr != nil {
+							log.Println(pushErr)
 						}
 					}
 				}
