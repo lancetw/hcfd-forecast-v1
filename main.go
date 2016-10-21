@@ -65,252 +65,249 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	for _, event := range events {
 		replyToken := event.ReplyToken
-		log.Println(event.Type)
-		if event.Type == linebot.EventTypeMessage {
-			switch event.Type {
-			case linebot.EventTypeFollow:
+		switch event.Type {
+		case linebot.EventTypeFollow:
+			profile, getProfileErr := bot.GetProfile(event.Source.UserID).Do()
+			if getProfileErr != nil {
+				bot.ReplyMessage(replyToken, linebot.NewTextMessage(getProfileErr.Error()))
+				log.Println(getProfileErr)
+			}
+			text := profile.DisplayName + " 您好，目前可用指令為：「加入」「退出」「雨量」「警報」「貓圖」「狀態」「時間」"
+			if _, replyErr := bot.ReplyMessage(
+				replyToken,
+				linebot.NewTextMessage(text)).Do(); replyErr != nil {
+				log.Println(replyErr)
+			}
+		case linebot.EventTypeMessage:
+			switch message := event.Message.(type) {
+			case *linebot.TextMessage:
 				profile, getProfileErr := bot.GetProfile(event.Source.UserID).Do()
 				if getProfileErr != nil {
 					bot.ReplyMessage(replyToken, linebot.NewTextMessage(getProfileErr.Error()))
 					log.Println(getProfileErr)
 				}
-				text := profile.DisplayName + " 您好，目前可用指令為：「加入」「退出」「雨量」「警報」「貓圖」「狀態」「時間」"
-				if _, replyErr := bot.ReplyMessage(
-					replyToken,
-					linebot.NewTextMessage(text)).Do(); replyErr != nil {
-					log.Println(replyErr)
-				}
-			case linebot.EventTypeMessage:
-				switch message := event.Message.(type) {
-				case *linebot.TextMessage:
-					profile, getProfileErr := bot.GetProfile(event.Source.UserID).Do()
-					if getProfileErr != nil {
-						bot.ReplyMessage(replyToken, linebot.NewTextMessage(getProfileErr.Error()))
-						log.Println(getProfileErr)
+
+				cmd := strings.Fields(message.Text)
+
+				switch cmd[0] {
+				case "加入":
+					c := db.Connect(os.Getenv("REDISTOGO_URL"))
+					status, addErr := c.Do("SADD", "user", replyToken)
+					defer c.Close()
+					if addErr != nil {
+						log.Println("SADD to redis error", addErr, status)
+					} else {
+						text := profile.DisplayName + " 您好，已將您加入傳送對象，未來將會傳送天氣警報資訊給您 ^＿^ "
+						if _, replyErr := bot.ReplyMessage(
+							replyToken,
+							linebot.NewTextMessage(text)).Do(); replyErr != nil {
+							log.Println(replyErr)
+						}
+					}
+				case "退出":
+					c := db.Connect(os.Getenv("REDISTOGO_URL"))
+					status, setErr := c.Do("SREM", "user", replyToken)
+					defer c.Close()
+
+					if setErr != nil {
+						log.Println("DEL to redis error", setErr, status)
+					} else {
+						text := profile.DisplayName + " 掰掰 Q＿Q"
+						if _, replyErr := bot.ReplyMessage(
+							replyToken,
+							linebot.NewTextMessage(text)).Do(); replyErr != nil {
+							log.Println(replyErr)
+						}
+					}
+				case "服務":
+					c := db.Connect(os.Getenv("REDISTOGO_URL"))
+					count, countErr := redis.Int(c.Do("SCARD", "user"))
+					defer c.Close()
+
+					if countErr != nil {
+						log.Println(countErr)
+					} else {
+						text := fmt.Sprintf("目前有 %d 人加入自動警訊服務。", count)
+						if _, replyErr := bot.ReplyMessage(
+							replyToken,
+							linebot.NewTextMessage(text)).Do(); replyErr != nil {
+							log.Println(replyErr)
+						}
+					}
+				case "狀態":
+					c := db.Connect(os.Getenv("REDISTOGO_URL"))
+					status, getErr := redis.Int(c.Do("SISMEMBER", "user", replyToken))
+
+					var text string
+					if getErr != nil || status == 0 {
+						text = "目前沒有登記您的編號喔！"
+					} else {
+						text = "您已經是傳送對象 :D"
 					}
 
-					cmd := strings.Fields(message.Text)
+					defer c.Close()
 
-					switch cmd[0] {
-					case "加入":
-						c := db.Connect(os.Getenv("REDISTOGO_URL"))
-						status, addErr := c.Do("SADD", "user", replyToken)
-						defer c.Close()
-						if addErr != nil {
-							log.Println("SADD to redis error", addErr, status)
-						} else {
-							text := profile.DisplayName + " 您好，已將您加入傳送對象，未來將會傳送天氣警報資訊給您 ^＿^ "
-							if _, replyErr := bot.ReplyMessage(
-								replyToken,
-								linebot.NewTextMessage(text)).Do(); replyErr != nil {
-								log.Println(replyErr)
-							}
-						}
-					case "退出":
-						c := db.Connect(os.Getenv("REDISTOGO_URL"))
-						status, setErr := c.Do("SREM", "user", replyToken)
-						defer c.Close()
+					if _, replyErr := bot.ReplyMessage(
+						replyToken,
+						linebot.NewTextMessage(text)).Do(); replyErr != nil {
+						log.Println(replyErr)
+					}
 
-						if setErr != nil {
-							log.Println("DEL to redis error", setErr, status)
-						} else {
-							text := profile.DisplayName + " 掰掰 Q＿Q"
-							if _, replyErr := bot.ReplyMessage(
-								replyToken,
-								linebot.NewTextMessage(text)).Do(); replyErr != nil {
-								log.Println(replyErr)
-							}
-						}
-					case "服務":
-						c := db.Connect(os.Getenv("REDISTOGO_URL"))
-						count, countErr := redis.Int(c.Do("SCARD", "user"))
-						defer c.Close()
+				case "時間":
+					local := time.Now()
+					location, timezoneErr := time.LoadLocation(timeZone)
+					if timezoneErr == nil {
+						local = local.In(location)
+					}
 
-						if countErr != nil {
-							log.Println(countErr)
-						} else {
-							text := fmt.Sprintf("目前有 %d 人加入自動警訊服務。", count)
-							if _, replyErr := bot.ReplyMessage(
-								replyToken,
-								linebot.NewTextMessage(text)).Do(); replyErr != nil {
-								log.Println(replyErr)
-							}
-						}
-					case "狀態":
-						c := db.Connect(os.Getenv("REDISTOGO_URL"))
-						status, getErr := redis.Int(c.Do("SISMEMBER", "user", replyToken))
+					text := local.Format("2006/01/02 15:04:05")
+					if _, replyErr := bot.ReplyMessage(
+						replyToken,
+						linebot.NewTextMessage(text)).Do(); replyErr != nil {
+						log.Println(replyErr)
+					}
 
-						var text string
-						if getErr != nil || status == 0 {
-							text = "目前沒有登記您的編號喔！"
-						} else {
-							text = "您已經是傳送對象 :D"
-						}
+				case "雨量":
+					target := []string{"新竹市"}
+					if len(cmd) > 1 {
+						target[0] = cmd[1]
+					}
 
-						defer c.Close()
+					msgs, _ := rain.GetRainingInfo(target, true)
 
+					local := time.Now()
+					location, timezoneErr := time.LoadLocation(timeZone)
+					if timezoneErr == nil {
+						local = local.In(location)
+					}
+					now := local.Format("15:04:05")
+
+					var text string
+					if len(msgs) == 0 {
+						text = "目前沒有雨量資訊！"
 						if _, replyErr := bot.ReplyMessage(
 							replyToken,
 							linebot.NewTextMessage(text)).Do(); replyErr != nil {
 							log.Println(replyErr)
 						}
-
-					case "時間":
-						local := time.Now()
-						location, timezoneErr := time.LoadLocation(timeZone)
-						if timezoneErr == nil {
-							local = local.In(location)
+					} else {
+						if len(msgs) > 0 {
+							for _, msg := range msgs {
+								text = text + msg + "\n\n"
+							}
+							text = strings.TrimSpace(text)
+							text = text + "\n\n" + now
+							if _, replyErr := bot.ReplyMessage(
+								replyToken,
+								linebot.NewTextMessage(text)).Do(); replyErr != nil {
+								log.Println(replyErr)
+							}
 						}
+					}
 
-						text := local.Format("2006/01/02 15:04:05")
+				case "警報":
+					msgs, _ := rain.GetWarningInfo(nil)
+
+					local := time.Now()
+					location, timezoneErr := time.LoadLocation(timeZone)
+					if timezoneErr == nil {
+						local = local.In(location)
+					}
+					now := local.Format("15:04:05")
+					var text string
+					if len(msgs) <= 0 {
+						text = "目前沒有天氣警報資訊！"
 						if _, replyErr := bot.ReplyMessage(
 							replyToken,
 							linebot.NewTextMessage(text)).Do(); replyErr != nil {
 							log.Println(replyErr)
 						}
-
-					case "雨量":
-						target := []string{"新竹市"}
-						if len(cmd) > 1 {
-							target[0] = cmd[1]
-						}
-
-						msgs, _ := rain.GetRainingInfo(target, true)
-
-						local := time.Now()
-						location, timezoneErr := time.LoadLocation(timeZone)
-						if timezoneErr == nil {
-							local = local.In(location)
-						}
-						now := local.Format("15:04:05")
-
-						var text string
-						if len(msgs) == 0 {
-							text = "目前沒有雨量資訊！"
+					} else {
+						if len(msgs) > 0 {
+							for _, msg := range msgs {
+								text = text + msg + "\n\n"
+							}
+							text = strings.TrimSpace(text)
+							text = text + "\n\n" + now
 							if _, replyErr := bot.ReplyMessage(
 								replyToken,
 								linebot.NewTextMessage(text)).Do(); replyErr != nil {
 								log.Println(replyErr)
 							}
-						} else {
-							if len(msgs) > 0 {
-								for _, msg := range msgs {
-									text = text + msg + "\n\n"
-								}
-								text = strings.TrimSpace(text)
-								text = text + "\n\n" + now
+						}
+					}
+
+				case "重開":
+					c := db.Connect(os.Getenv("REDISTOGO_URL"))
+					status0, clearErr0 := c.Do("DEL", "token0")
+					if clearErr0 != nil {
+						log.Println("DEL to redis error", clearErr0, status0)
+					}
+					status1, clearErr1 := c.Do("DEL", "token1")
+					if clearErr1 != nil {
+						log.Println("DEL to redis error", clearErr1, status1)
+					}
+
+					if _, replyErr := bot.ReplyMessage(
+						replyToken,
+						linebot.NewTextMessage("已重開")).Do(); replyErr != nil {
+						log.Println(replyErr)
+					}
+
+				case "貓圖":
+					image := "https://thecatapi.com/api/images/get?format=src&type=jpg&api_key=MTI5ODM2"
+					if image != "" {
+						if _, replyErr := bot.ReplyMessage(
+							replyToken,
+							linebot.NewImageMessage(image, image)).Do(); replyErr != nil {
+							log.Println(replyErr)
+						}
+					}
+
+				case "妹子":
+					type MeisData struct {
+						ID         string `json:"id"`
+						Name       string `json:"name"`
+						ImgNo      string `json:"img_no"`
+						Fanpage    string `json:"fanpage"`
+						Creator    string `json:"creator"`
+						UpdateTime string `json:"update_time"`
+					}
+
+					type Beauty struct {
+						Meis map[string]MeisData `json:"meis"`
+					}
+
+					beauty := new(Beauty)
+					getJSONErr := getJSON("http://beauty.zones.gamebase.com.tw/wall?json", &beauty)
+					if len(beauty.Meis) > 0 {
+						for fbid, data := range beauty.Meis {
+							image := fmt.Sprintf("https://graph.facebook.com/%s/picture?type=large", fbid)
+							if image != "" {
+								link := fmt.Sprintf("https://www.facebook.com/profile.php?id=%s", fbid)
+								description := fmt.Sprintf("%s %s", data.Name, link)
+
 								if _, replyErr := bot.ReplyMessage(
 									replyToken,
-									linebot.NewTextMessage(text)).Do(); replyErr != nil {
+									linebot.NewImageMessage(image, image),
+									linebot.NewTextMessage(description)).Do(); replyErr != nil {
 									log.Println(replyErr)
 								}
 							}
-						}
 
-					case "警報":
-						msgs, _ := rain.GetWarningInfo(nil)
-
-						local := time.Now()
-						location, timezoneErr := time.LoadLocation(timeZone)
-						if timezoneErr == nil {
-							local = local.In(location)
+							break
 						}
-						now := local.Format("15:04:05")
-						var text string
-						if len(msgs) <= 0 {
-							text = "目前沒有天氣警報資訊！"
-							if _, replyErr := bot.ReplyMessage(
-								replyToken,
-								linebot.NewTextMessage(text)).Do(); replyErr != nil {
-								log.Println(replyErr)
-							}
-						} else {
-							if len(msgs) > 0 {
-								for _, msg := range msgs {
-									text = text + msg + "\n\n"
-								}
-								text = strings.TrimSpace(text)
-								text = text + "\n\n" + now
-								if _, replyErr := bot.ReplyMessage(
-									replyToken,
-									linebot.NewTextMessage(text)).Do(); replyErr != nil {
-									log.Println(replyErr)
-								}
-							}
-						}
+					}
 
-					case "重開":
-						c := db.Connect(os.Getenv("REDISTOGO_URL"))
-						status0, clearErr0 := c.Do("DEL", "token0")
-						if clearErr0 != nil {
-							log.Println("DEL to redis error", clearErr0, status0)
-						}
-						status1, clearErr1 := c.Do("DEL", "token1")
-						if clearErr1 != nil {
-							log.Println("DEL to redis error", clearErr1, status1)
-						}
+					if getJSONErr != nil {
+						log.Println(getJSONErr)
+					}
 
-						if _, replyErr := bot.ReplyMessage(
-							replyToken,
-							linebot.NewTextMessage("已重開")).Do(); replyErr != nil {
-							log.Println(replyErr)
-						}
-
-					case "貓圖":
-						image := "https://thecatapi.com/api/images/get?format=src&type=jpg&api_key=MTI5ODM2"
-						if image != "" {
-							if _, replyErr := bot.ReplyMessage(
-								replyToken,
-								linebot.NewImageMessage(image, image)).Do(); replyErr != nil {
-								log.Println(replyErr)
-							}
-						}
-
-					case "妹子":
-						type MeisData struct {
-							ID         string `json:"id"`
-							Name       string `json:"name"`
-							ImgNo      string `json:"img_no"`
-							Fanpage    string `json:"fanpage"`
-							Creator    string `json:"creator"`
-							UpdateTime string `json:"update_time"`
-						}
-
-						type Beauty struct {
-							Meis map[string]MeisData `json:"meis"`
-						}
-
-						beauty := new(Beauty)
-						getJSONErr := getJSON("http://beauty.zones.gamebase.com.tw/wall?json", &beauty)
-						if len(beauty.Meis) > 0 {
-							for fbid, data := range beauty.Meis {
-								image := fmt.Sprintf("https://graph.facebook.com/%s/picture?type=large", fbid)
-								if image != "" {
-									link := fmt.Sprintf("https://www.facebook.com/profile.php?id=%s", fbid)
-									description := fmt.Sprintf("%s %s", data.Name, link)
-
-									if _, replyErr := bot.ReplyMessage(
-										replyToken,
-										linebot.NewImageMessage(image, image),
-										linebot.NewTextMessage(description)).Do(); replyErr != nil {
-										log.Println(replyErr)
-									}
-								}
-
-								break
-							}
-						}
-
-						if getJSONErr != nil {
-							log.Println(getJSONErr)
-						}
-
-					default:
-						if _, replyErr := bot.ReplyMessage(
-							replyToken,
-							linebot.NewTextMessage("指令錯誤，請重試")).Do(); replyErr != nil {
-							log.Println(replyErr)
-						}
+				default:
+					if _, replyErr := bot.ReplyMessage(
+						replyToken,
+						linebot.NewTextMessage("指令錯誤，請重試")).Do(); replyErr != nil {
+						log.Println(replyErr)
 					}
 				}
 			}
