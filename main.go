@@ -290,17 +290,12 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 							for fbid, data := range beauty.Meis {
 								image := fmt.Sprintf("https://graph.facebook.com/%s/picture?type=large", fbid)
 								if image != "" {
-									if _, replyErr := bot.ReplyMessage(
-										replyToken,
-										linebot.NewImageMessage(image, image)).Do(); replyErr != nil {
-										log.Println(replyErr)
-									}
-
 									link := fmt.Sprintf("https://www.facebook.com/profile.php?id=%s", fbid)
 									description := fmt.Sprintf("%s %s", data.Name, link)
 
 									if _, replyErr := bot.ReplyMessage(
 										replyToken,
+										linebot.NewImageMessage(image, image),
 										linebot.NewTextMessage(description)).Do(); replyErr != nil {
 										log.Println(replyErr)
 									}
