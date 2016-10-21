@@ -23,8 +23,8 @@ import (
 	"time"
 
 	"github.com/garyburd/redigo/redis"
-	"github.com/lancetw/hcfd-forecast/db"
-	"github.com/lancetw/hcfd-forecast/rain"
+	"github.com/lancetw/hcfd-forecast-v1/db"
+	"github.com/lancetw/hcfd-forecast-v1/rain"
 	"github.com/line/line-bot-sdk-go/linebot"
 )
 
@@ -66,7 +66,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 	for _, event := range events {
 		if event.Type == linebot.EventTypeMessage {
 			switch event.Type {
-			case linebot.EventTypeJoin:
+			case linebot.EventTypeFollow:
 				profile, getProfileErr := bot.GetProfile(event.Source.UserID).Do()
 				if getProfileErr != nil {
 					bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(getProfileErr.Error()))
@@ -289,20 +289,22 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 							for fbid, data := range beauty.Meis {
 								image := fmt.Sprintf("https://graph.facebook.com/%s/picture?type=large", fbid)
 								if image != "" {
+									log.Println("test1")
 									if _, replyErr := bot.ReplyMessage(
 										event.ReplyToken,
 										linebot.NewImageMessage(image, image)).Do(); replyErr != nil {
 										log.Println(replyErr)
 									}
-
+									log.Println("test2")
 									link := fmt.Sprintf("https://www.facebook.com/profile.php?id=%s", fbid)
 									description := fmt.Sprintf("%s %s", data.Name, link)
-
+									log.Println("test3")
 									if _, replyErr := bot.ReplyMessage(
 										event.ReplyToken,
 										linebot.NewTextMessage(description)).Do(); replyErr != nil {
 										log.Println(replyErr)
 									}
+									log.Println("test4")
 								}
 
 								break

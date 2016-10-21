@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/garyburd/redigo/redis"
-	"github.com/lancetw/hcfd-forecast/db"
-	"github.com/lancetw/hcfd-forecast/rain"
+	"github.com/lancetw/hcfd-forecast-v1/db"
+	"github.com/lancetw/hcfd-forecast-v1/rain"
 	"github.com/line/line-bot-sdk-go/linebot"
 	"github.com/robfig/cron"
 )
