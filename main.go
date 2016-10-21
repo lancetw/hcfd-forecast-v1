@@ -254,6 +254,19 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						log.Println(replyErr)
 					}
 
+				case "清除":
+					c := db.Connect(os.Getenv("REDISTOGO_URL"))
+					status0, clearErr0 := c.Do("DEL", "user")
+					if clearErr0 != nil {
+						log.Println("DEL to redis error", clearErr0, status0)
+					}
+
+					if _, replyErr := bot.ReplyMessage(
+						replyToken,
+						linebot.NewTextMessage("已清除使用者")).Do(); replyErr != nil {
+						log.Println(replyErr)
+					}
+
 				case "貓圖":
 					image := "https://thecatapi.com/api/images/get?format=src&type=jpg&api_key=MTI5ODM2"
 					if image != "" {
