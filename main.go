@@ -256,7 +256,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						}
 
 					case "貓圖":
-						image := "https://thecatapi.com/api/images/get?format=src&type=jpg"
+						image := "https://thecatapi.com/api/images/get?format=src&type=jpg&api_key=MTI5ODM2"
 						if image != "" {
 							if _, replyErr := bot.ReplyMessage(
 								replyToken,
