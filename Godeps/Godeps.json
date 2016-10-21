@@ -1,6 +1,6 @@
 {
 	"ImportPath": "github.com/lancetw/hcfd-forecast",
-	"GoVersion": "go1.6",
+	"GoVersion": "go1.7",
 	"GodepVersion": "v74",
 	"Packages": [
 		"./..."
@@ -18,42 +18,21 @@
 		},
 		{
 			"ImportPath": "github.com/line/line-bot-sdk-go/linebot",
-			"Rev": "f3e3a38aee47ca24ded221ce4be6d9363e3d32e1"
-		},
-		{
-			"ImportPath": "github.com/newrelic/go-agent",
-			"Comment": "v1.1.0",
-			"Rev": "a923caa59930cbb1b27d2a9fb2d5663d9e5c637c"
-		},
-		{
-			"ImportPath": "github.com/newrelic/go-agent/internal",
-			"Comment": "v1.1.0",
-			"Rev": "a923caa59930cbb1b27d2a9fb2d5663d9e5c637c"
-		},
-		{
-			"ImportPath": "github.com/newrelic/go-agent/internal/jsonx",
-			"Comment": "v1.1.0",
-			"Rev": "a923caa59930cbb1b27d2a9fb2d5663d9e5c637c"
-		},
-		{
-			"ImportPath": "github.com/newrelic/go-agent/internal/logger",
-			"Comment": "v1.1.0",
-			"Rev": "a923caa59930cbb1b27d2a9fb2d5663d9e5c637c"
-		},
-		{
-			"ImportPath": "github.com/newrelic/go-agent/internal/sysinfo",
-			"Comment": "v1.1.0",
-			"Rev": "a923caa59930cbb1b27d2a9fb2d5663d9e5c637c"
-		},
-		{
-			"ImportPath": "github.com/newrelic/go-agent/internal/utilization",
-			"Comment": "v1.1.0",
-			"Rev": "a923caa59930cbb1b27d2a9fb2d5663d9e5c637c"
+			"Comment": "1.0.0-27-g3292f94",
+			"Rev": "3292f94e32a4466b634029896e09ce03fea7e370"
 		},
 		{
 			"ImportPath": "github.com/robfig/cron",
 			"Comment": "v1-36-gab4c16f",
 			"Rev": "ab4c16f3a09641bd19d65f55b3d8d6edda7a8e05"
+		},
+		{
+			"ImportPath": "golang.org/x/net/context",
+			"Rev": "daba796358cd2742b75aae05761f1b898c9f6a5c"
+		},
+		{
+			"ImportPath": "golang.org/x/net/context/ctxhttp",
+			"Rev": "daba796358cd2742b75aae05761f1b898c9f6a5c"
 		}
 	]
 }

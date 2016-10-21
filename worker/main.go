@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 
@@ -32,14 +31,11 @@ func main() {
 
 // GoProcess is main process
 func GoProcess() {
-	strID := os.Getenv("ChannelID")
-	numID, err := strconv.ParseInt(strID, 10, 64)
-	if err != nil {
-		log.Fatal("Wrong environment setting about ChannelID")
-	}
-	bot, err = linebot.NewClient(numID, os.Getenv("ChannelSecret"), os.Getenv("MID"))
+	var err error
+	bot, err = linebot.New(os.Getenv("CHANNEL_SECRET"), os.Getenv("ACCESS_TOKEN"))
 	if err != nil {
 		log.Println("Bot:", bot, " err:", err)
+		return
 	}
 
 	log.Println("{$")
@@ -77,10 +73,11 @@ func GoProcess() {
 					text = strings.TrimSpace(text)
 					text = text + "\n\n" + now
 					log.Println(text)
-					for _, contentTo := range users0 {
-						_, err = bot.SendText([]string{contentTo}, text)
-						if err != nil {
-							log.Println(err)
+					for _, replyToken := range users0 {
+						if _, replyErr := bot.ReplyMessage(
+							replyToken,
+							linebot.NewTextMessage(text)).Do(); replyErr != nil {
+							log.Println(replyErr)
 						}
 					}
 				}
@@ -124,10 +121,11 @@ func GoProcess() {
 					text = strings.TrimSpace(text)
 					text = text + "\n\n" + now
 					log.Println(text)
-					for _, contentTo := range users1 {
-						_, msgErr := bot.SendText([]string{contentTo}, text)
-						if msgErr != nil {
-							log.Println(err)
+					for _, replyToken := range users1 {
+						if _, replyErr := bot.ReplyMessage(
+							replyToken,
+							linebot.NewTextMessage(text)).Do(); replyErr != nil {
+							log.Println(replyErr)
 						}
 					}
 				}
