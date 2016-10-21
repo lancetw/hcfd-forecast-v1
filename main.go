@@ -64,17 +64,18 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, event := range events {
+		replyToken := event.ReplyToken
 		if event.Type == linebot.EventTypeMessage {
 			switch event.Type {
 			case linebot.EventTypeFollow:
 				profile, getProfileErr := bot.GetProfile(event.Source.UserID).Do()
 				if getProfileErr != nil {
-					bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(getProfileErr.Error()))
+					bot.ReplyMessage(replyToken, linebot.NewTextMessage(getProfileErr.Error()))
 					log.Println(getProfileErr)
 				}
 				text := profile.DisplayName + " 您好，目前可用指令為：「加入」「退出」「雨量」「警報」「貓圖」「狀態」「時間」"
 				if _, replyErr := bot.ReplyMessage(
-					event.ReplyToken,
+					replyToken,
 					linebot.NewTextMessage(text)).Do(); replyErr != nil {
 					log.Println(replyErr)
 				}
@@ -83,7 +84,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 				case *linebot.TextMessage:
 					profile, getProfileErr := bot.GetProfile(event.Source.UserID).Do()
 					if getProfileErr != nil {
-						bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(getProfileErr.Error()))
+						bot.ReplyMessage(replyToken, linebot.NewTextMessage(getProfileErr.Error()))
 						log.Println(getProfileErr)
 					}
 
@@ -92,21 +93,21 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					switch cmd[0] {
 					case "加入":
 						c := db.Connect(os.Getenv("REDISTOGO_URL"))
-						status, addErr := c.Do("SADD", "user", event.ReplyToken)
+						status, addErr := c.Do("SADD", "user", replyToken)
 						defer c.Close()
 						if addErr != nil {
 							log.Println("SADD to redis error", addErr, status)
 						} else {
 							text := profile.DisplayName + " 您好，已將您加入傳送對象，未來將會傳送天氣警報資訊給您 ^＿^ "
 							if _, replyErr := bot.ReplyMessage(
-								event.ReplyToken,
+								replyToken,
 								linebot.NewTextMessage(text)).Do(); replyErr != nil {
 								log.Println(replyErr)
 							}
 						}
 					case "退出":
 						c := db.Connect(os.Getenv("REDISTOGO_URL"))
-						status, setErr := c.Do("SREM", "user", event.ReplyToken)
+						status, setErr := c.Do("SREM", "user", replyToken)
 						defer c.Close()
 
 						if setErr != nil {
@@ -114,7 +115,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						} else {
 							text := profile.DisplayName + " 掰掰 Q＿Q"
 							if _, replyErr := bot.ReplyMessage(
-								event.ReplyToken,
+								replyToken,
 								linebot.NewTextMessage(text)).Do(); replyErr != nil {
 								log.Println(replyErr)
 							}
@@ -129,14 +130,14 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						} else {
 							text := fmt.Sprintf("目前有 %d 人加入自動警訊服務。", count)
 							if _, replyErr := bot.ReplyMessage(
-								event.ReplyToken,
+								replyToken,
 								linebot.NewTextMessage(text)).Do(); replyErr != nil {
 								log.Println(replyErr)
 							}
 						}
 					case "狀態":
 						c := db.Connect(os.Getenv("REDISTOGO_URL"))
-						status, getErr := redis.Int(c.Do("SISMEMBER", "user", event.ReplyToken))
+						status, getErr := redis.Int(c.Do("SISMEMBER", "user", replyToken))
 
 						var text string
 						if getErr != nil || status == 0 {
@@ -148,7 +149,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						defer c.Close()
 
 						if _, replyErr := bot.ReplyMessage(
-							event.ReplyToken,
+							replyToken,
 							linebot.NewTextMessage(text)).Do(); replyErr != nil {
 							log.Println(replyErr)
 						}
@@ -162,7 +163,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 
 						text := local.Format("2006/01/02 15:04:05")
 						if _, replyErr := bot.ReplyMessage(
-							event.ReplyToken,
+							replyToken,
 							linebot.NewTextMessage(text)).Do(); replyErr != nil {
 							log.Println(replyErr)
 						}
@@ -186,7 +187,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						if len(msgs) == 0 {
 							text = "目前沒有雨量資訊！"
 							if _, replyErr := bot.ReplyMessage(
-								event.ReplyToken,
+								replyToken,
 								linebot.NewTextMessage(text)).Do(); replyErr != nil {
 								log.Println(replyErr)
 							}
@@ -198,7 +199,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 								text = strings.TrimSpace(text)
 								text = text + "\n\n" + now
 								if _, replyErr := bot.ReplyMessage(
-									event.ReplyToken,
+									replyToken,
 									linebot.NewTextMessage(text)).Do(); replyErr != nil {
 									log.Println(replyErr)
 								}
@@ -218,7 +219,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						if len(msgs) <= 0 {
 							text = "目前沒有天氣警報資訊！"
 							if _, replyErr := bot.ReplyMessage(
-								event.ReplyToken,
+								replyToken,
 								linebot.NewTextMessage(text)).Do(); replyErr != nil {
 								log.Println(replyErr)
 							}
@@ -230,7 +231,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 								text = strings.TrimSpace(text)
 								text = text + "\n\n" + now
 								if _, replyErr := bot.ReplyMessage(
-									event.ReplyToken,
+									replyToken,
 									linebot.NewTextMessage(text)).Do(); replyErr != nil {
 									log.Println(replyErr)
 								}
@@ -249,7 +250,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						}
 
 						if _, replyErr := bot.ReplyMessage(
-							event.ReplyToken,
+							replyToken,
 							linebot.NewTextMessage("已重開")).Do(); replyErr != nil {
 							log.Println(replyErr)
 						}
@@ -263,7 +264,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						image := cat.File
 						if image != "" {
 							if _, replyErr := bot.ReplyMessage(
-								event.ReplyToken,
+								replyToken,
 								linebot.NewImageMessage(image, image)).Do(); replyErr != nil {
 								log.Println(replyErr)
 							}
@@ -289,22 +290,20 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 							for fbid, data := range beauty.Meis {
 								image := fmt.Sprintf("https://graph.facebook.com/%s/picture?type=large", fbid)
 								if image != "" {
-									log.Println("test1")
 									if _, replyErr := bot.ReplyMessage(
-										event.ReplyToken,
+										replyToken,
 										linebot.NewImageMessage(image, image)).Do(); replyErr != nil {
 										log.Println(replyErr)
 									}
-									log.Println("test2")
+
 									link := fmt.Sprintf("https://www.facebook.com/profile.php?id=%s", fbid)
 									description := fmt.Sprintf("%s %s", data.Name, link)
-									log.Println("test3")
+
 									if _, replyErr := bot.ReplyMessage(
-										event.ReplyToken,
+										replyToken,
 										linebot.NewTextMessage(description)).Do(); replyErr != nil {
 										log.Println(replyErr)
 									}
-									log.Println("test4")
 								}
 
 								break
@@ -317,7 +316,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 
 					default:
 						if _, replyErr := bot.ReplyMessage(
-							event.ReplyToken,
+							replyToken,
 							linebot.NewTextMessage("指令錯誤，請重試")).Do(); replyErr != nil {
 							log.Println(replyErr)
 						}
